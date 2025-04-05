@@ -91,33 +91,33 @@ struct CategoryCard: View {
     }
 }
 
-struct GearItemView: View {
-    var body: some View {
-        HStack {
-            Image(systemName: "backpack")
-                .resizable()
-                .frame(width: 60, height: 60)
-                .background(Color.gray.opacity(0.3))
-                .cornerRadius(10)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Ion Light Weight Chalk Bag")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                Text("0.8 km away • Available Now")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-            RoundedRectangle(cornerRadius: 8)
-                .frame(width: 40, height: 20)
-                .foregroundColor(.black)
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-    }
-}
+//struct GearItemView: View {
+//    var body: some View {
+//        HStack {
+//            Image(systemName: "backpack")
+//                .resizable()
+//                .frame(width: 60, height: 60)
+//                .background(Color.gray.opacity(0.3))
+//                .cornerRadius(10)
+//            
+//            VStack(alignment: .leading, spacing: 4) {
+//                Text("Ion Light Weight Chalk Bag")
+//                    .font(.subheadline)
+//                    .fontWeight(.semibold)
+//                Text("0.8 km away • Available Now")
+//                    .font(.caption)
+//                    .foregroundColor(.gray)
+//            }
+//            Spacer()
+//            RoundedRectangle(cornerRadius: 8)
+//                .frame(width: 40, height: 20)
+//                .foregroundColor(.black)
+//        }
+//        .padding()
+//        .background(Color(.systemGray6))
+//        .cornerRadius(12)
+//    }
+//}
 
 #Preview {
     HomePageView()
