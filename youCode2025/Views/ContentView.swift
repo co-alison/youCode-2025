@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject private var dbService = DBService.shared
     var body: some View {
-        ScanView()
+        if dbService.user != nil {
+            HomeView()
+        } else {
+            AuthView()
+        }
     }
 }
 
