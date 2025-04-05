@@ -11,7 +11,7 @@ struct ContentView: View {
     @ObservedObject private var dbService = DBService.shared
     var body: some View {
         if dbService.user != nil {
-            HomeView()
+            HomePageView()
         } else {
             AuthView()
         }
