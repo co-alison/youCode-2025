@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GearItem: Codable {
+struct GearItem: Codable, Identifiable {
     let id: String
     let gearType: GearType
     let latitude: Double
