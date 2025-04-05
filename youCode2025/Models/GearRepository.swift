@@ -8,14 +8,14 @@
 import Foundation
 
 class GearRepository {
-    private let supabase: SupabaseClient2
+    private let supabase: DBService
     
-    init(supabase: SupabaseClient2) {
+    init(supabase: DBService) {
         self.supabase = supabase
     }
     
     // Get a user and all their gear
-    func getUserWithGear(userId: UUID) async throws -> (UserItem, [GearItem]) {
+    func getUserWithGear(userId: UUID) async throws -> (Profile, [GearItem]) {
         // Get the user
         let user = try await supabase.getUser(id: userId)
         

@@ -10,6 +10,8 @@ import SwiftUI
 struct AuthView: View {
     @State private var email = ""
     @State private var password = ""
+    @State private var firstName = ""
+    @State private var lastName = ""
     @State private var isSignUp = false
     @ObservedObject private var dbService = DBService.shared
     
@@ -27,12 +29,27 @@ struct AuthView: View {
             SecureField("Password", text: $password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+            
+            if isSignUp {
+                TextField("First Name", text: $firstName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                TextField("Last Name", text: $lastName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+            }
 
             Button(isSignUp ? "Sign Up" : "Login") {
                 Task {
                     do {
                         if isSignUp {
-                            try await dbService.signUp(email: email, password: password)
+                            try await dbService.signUp(
+                                email: email,
+                                password: password,
+                                firstName: firstName,
+                                lastName: lastName
+                            )
                         } else {
                             try await dbService.signIn(email: email, password: password)
                         }
@@ -51,6 +68,7 @@ struct AuthView: View {
         }
     }
 }
+
 
 #Preview {
     AuthView()

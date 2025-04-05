@@ -12,14 +12,15 @@ struct UserGearItem: Codable {
     let id: Int
     let userId: UUID
     let gearId: Int
-    
-    var user: UserItem
-    var gear: GearItem
-    
+    let isActive: Bool
+    var user: Profile
+    var gear: GearItem?
+
     enum CodingKeys: String, CodingKey {
-        case id = "userGearID"
-        case userId = "userID"
-        case gearId = "gearID"
+        case id = "user_gear_id"
+        case userId = "user_id"
+        case gearId = "gear_id"
+        case isActive = "is_active"
         case user, gear
         }
         
