@@ -8,12 +8,27 @@
 import Foundation
 
 struct GearItem: Codable {
-    let id: String
-    let gearType: GearType
+    
+    let id: Int
+    let createdAt: Date
+    let name: String
+    let type: String
+    let description: String
+    let currentCondition: String
     let latitude: Double
     let longitude: Double
-    let name: String
-    let description: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case createdAt = "created_at"
+        case name
+        case type
+        case description
+        case currentCondition = "current_condition"
+        case latitude
+        case longitude
+        
+    }
     
     func toJSONString() -> String? {
         let encoder = JSONEncoder()
@@ -24,7 +39,3 @@ struct GearItem: Codable {
     }
 }
 
-enum GearType: Int, Codable {
-    case boots
-    case jacket
-}
