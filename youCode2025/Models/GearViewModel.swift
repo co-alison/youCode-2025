@@ -10,8 +10,8 @@ import Combine
 
 class GearViewModel: ObservableObject {
     private let repository: GearRepository
-    @Published var userGear: [Gear] = []
-    @Published var nearbyGear: [Gear] = []
+    @Published var userGear: [GearItem] = []
+    @Published var nearbyGear: [GearItem] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     
