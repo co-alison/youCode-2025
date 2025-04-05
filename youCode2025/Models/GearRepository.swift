@@ -8,14 +8,14 @@
 import Foundation
 
 class GearRepository {
-    private let supabase: SupabaseClient
+    private let supabase: DBService
     
-    init(supabase: SupabaseClient) {
+    init(supabase: DBService) {
         self.supabase = supabase
     }
     
     // Get a user and all their gear
-    func getUserWithGear(userId: UUID) async throws -> (UserItem, [GearItem]) {
+    func getUserWithGear(userId: UUID) async throws -> (Profile, [GearItem]) {
         // Get the user
         let user = try await supabase.getUser(id: userId)
         
@@ -27,12 +27,12 @@ class GearRepository {
     }
     
     // Add a gear item to a user
-    func addGearToUser(userId: UUID, gear: Gear) async throws {
+    func addGearToUser(userId: UUID, gear: GearItem) async throws {
         _ = try await supabase.associateGearWithUser(userId: userId, gearId: gear.id)
     }
     
     // Find gear near a location
-    func getGearWithinRadius(latitude: Double, longitude: Double, radiusInKm: Double) async throws -> [Gear] {
+    func getGearWithinRadius(latitude: Double, longitude: Double, radiusInKm: Double) async throws -> [GearItem] {
         let allGear = try await supabase.getAllGear()
         
         return allGear.filter { gear in
