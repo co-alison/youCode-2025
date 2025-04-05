@@ -14,7 +14,7 @@ struct UserGearItem: Codable {
     let gearId: Int
     
     var user: UserItem
-    var gear: Gear?
+    var gear: GearItem
     
     enum CodingKeys: String, CodingKey {
         case id = "userGearID"

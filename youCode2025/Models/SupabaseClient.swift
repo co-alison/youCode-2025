@@ -7,7 +7,7 @@
 
 import Foundation
 
-class SupabaseClient {
+class SupabaseClient2 {
     private let baseURL: String
     private let apiKey: String
     private let session: URLSession
@@ -25,19 +25,19 @@ class SupabaseClient {
     }
     
     // Gets all users
-    func getUsers() async throws -> [User] {
+    func getUsers() async throws -> [UserItem] {
         return try await sendRequest(endpoint: "User", method: "GET")
     }
     
     // Gets one user by their ID
-    func getUser(id: UUID) async throws -> User {
+    func getUser(id: UUID) async throws -> UserItem {
         return try await sendRequest(endpoint: "User", method: "GET", queryItems: [
             URLQueryItem(name: "id", value: "eq.\(id.uuidString)")
         ]).first!
     }
     
     // Creates a new user
-    func createUser(email: String, name: String, password: String) async throws -> User {
+    func createUser(email: String, name: String, password: String) async throws -> UserItem {
         return try await sendRequest(
             endpoint: "User",
             method: "POST",
@@ -46,7 +46,7 @@ class SupabaseClient {
     }
     
     // Updates a user's information
-    func updateUser(id: UUID, updates: [String: Any]) async throws -> User {
+    func updateUser(id: UUID, updates: [String: Any]) async throws -> UserItem {
         return try await sendRequest(
             endpoint: "User",
             method: "PATCH",
@@ -56,12 +56,12 @@ class SupabaseClient {
     }
     
     // Gets all gear items
-    func getAllGear() async throws -> [Gear] {
+    func getAllGear() async throws -> [GearItem] {
         return try await sendRequest(endpoint: "Gear", method: "GET")
     }
     
     // Gets one gear item by its ID
-    func getGear(id: Int) async throws -> Gear {
+    func getGear(id: Int) async throws -> GearItem {
         return try await sendRequest(endpoint: "Gear", method: "GET", queryItems: [
             URLQueryItem(name: "id", value: "eq.\(id)")
         ]).first!
@@ -69,7 +69,7 @@ class SupabaseClient {
     
     // Creates a new gear item
     func createGear(name: String, type: String, description: String,
-                   currentCondition: String, latitude: Double, longitude: Double) async throws -> Gear {
+                   currentCondition: String, latitude: Double, longitude: Double) async throws -> GearItem {
         return try await sendRequest(
             endpoint: "Gear",
             method: "POST",
@@ -85,7 +85,7 @@ class SupabaseClient {
     }
     
     // Updates a gear item
-    func updateGear(id: Int, updates: [String: Any]) async throws -> Gear {
+    func updateGear(id: Int, updates: [String: Any]) async throws -> GearItem {
         return try await sendRequest(
             endpoint: "Gear",
             method: "PATCH",
@@ -96,15 +96,15 @@ class SupabaseClient {
     
     
     // Gets all gear for a specific user
-    func getUserGear(userId: UUID) async throws -> [UserGear] {
-        let userGears: [UserGear] = try await sendRequest(
+    func getUserGear(userId: UUID) async throws -> [UserGearItem] {
+        let userGears: [UserGearItem] = try await sendRequest(
             endpoint: "UserGears",
             method: "GET",
             queryItems: [URLQueryItem(name: "userID", value: "eq.\(userId.uuidString)")]
         )
         
         // Load the gear details for each user gear
-        var result = [UserGear]()
+        var result = [UserGearItem]()
         for var userGear in userGears {
             userGear.gear = try await getGear(id: userGear.gearId)
             result.append(userGear)
@@ -114,7 +114,7 @@ class SupabaseClient {
     }
     
     // Connects a gear item to a user
-    func associateGearWithUser(userId: UUID, gearId: Int) async throws -> UserGear {
+    func associateGearWithUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
         return try await sendRequest(
             endpoint: "UserGears",
             method: "POST",
