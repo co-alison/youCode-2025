@@ -15,7 +15,7 @@ struct UserGearItem: Codable {
     let isActive: Bool
     var user: Profile
     var gear: GearItem?
-    
+
     enum CodingKeys: String, CodingKey {
         case id = "user_gear_id"
         case userId = "user_id"
