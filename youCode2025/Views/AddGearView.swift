@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct AddGearView: View {
-//    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var nfcService = NFCService()
     @StateObject private var locationManager = LocationService()
     @ObservedObject private var dbService = DBService.shared
@@ -89,34 +89,24 @@ struct AddGearView: View {
 
                 // Section: Report Condition
                 SectionHeader(title: "REPORT CONDITION")
-                HStack(spacing: 8) {
+                LazyVGrid(columns: [
+                    GridItem(.flexible()),
+                    GridItem(.flexible())
+                ], spacing: 8) {
                     ForEach(GearItem.GearCondition.allCases, id: \.self) { condition in
                         Button(action: {
                             currentCondition = condition
                         }) {
                             Text(condition.rawValue.capitalized)
-                                .padding()
+                                .padding(.vertical, 12)
                                 .frame(maxWidth: .infinity)
                                 .background(currentCondition == condition ? Color.black : Color(.systemGray5))
                                 .foregroundColor(currentCondition == condition ? .white : .black)
                                 .cornerRadius(10)
+                                .font(.subheadline)
                         }
                     }
                 }
-            
-//            TextField("Gear Name: ex. Blundstone boots", text: $name)
-//            TextField("Gear Description: ex. Size 4.5, Black", text: $description)
-//            Picker("Gear Type", selection: $type) {
-//                ForEach(GearItem.GearType.allCases, id: \.self) { gearType in
-//                    Text(gearType.rawValue.capitalized)
-//                }
-//            }
-////            .pickerStyle(.menu)
-//            Picker("Gear Condition", selection: $currentCondition) {
-//                ForEach(GearItem.GearCondition.allCases, id: \.self) { gearCondition in
-//                    Text(gearCondition.rawValue.capitalized)
-//                }
-//            }
             
             Button(
                 action: {
@@ -134,7 +124,7 @@ struct AddGearView: View {
                         nfcService.startWriting(with: String(id))
                         print("Added Gear \(id)")
                         isPerformingTask = false
-//                        dismiss()
+                        dismiss()
                     }
                 }) {
                     if isPerformingTask {

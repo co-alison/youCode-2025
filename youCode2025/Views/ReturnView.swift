@@ -37,12 +37,11 @@ struct ReturnView: View {
                     }
                     .padding(.horizontal)
                 } else {
-                    Text("REPORT CONDITION")
-                        .font(.headline)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                    
-                    HStack(spacing: 8) {
+                    SectionHeader(title: "REPORT CONDITION")
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 8) {
                         ForEach(GearItem.GearCondition.allCases, id: \.self) { condition in
                             Button(action: {
                                 selectedCondition = condition
