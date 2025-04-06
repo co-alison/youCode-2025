@@ -92,6 +92,7 @@ class DBService: ObservableObject {
             email: email,
             firstName: firstName,
             lastName: lastName,
+            points: 0,
             profilePhotoURL: imageURL
         )
 
@@ -683,11 +684,53 @@ class DBService: ObservableObject {
         return try bucket.getPublicURL(path: filePath, download: false).absoluteString
     }
 
-    func updateProfileImageURL(for userId: UUID, imageURL: String) async throws {
-        _ = try await client
+//    func updateProfileImageURL(for userId: UUID, imageURL: String) async throws {
+//        _ = try await client
+//            .from("Profiles")
+//            .update(["profile_image_url": imageURL])
+//            .eq("id", value: userId.uuidString)
+//            .execute()
+//    }
+    
+
+    func updateProfile(
+        id: UUID,
+        email: String? = nil,
+        points: Int? = nil,
+        distanceHiked: Int? = nil,
+        profilePhotoURL: String? = nil
+    ) async throws -> Profile {
+        
+        let updatePayload = ProfileUpdate(
+            email: email,
+            points: points,
+            distanceHiked: distanceHiked,
+            profilePhotoURL: profilePhotoURL
+        )
+
+        let data = try await client
             .from("Profiles")
-            .update(["profile_image_url": imageURL])
-            .eq("id", value: userId.uuidString)
+            .update(updatePayload)
+            .eq("id", value: id)
+            .select()
+            .single()
             .execute()
+            .data
+
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "updateProfile", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+        }
+
+        print("Raw JSON response - updateGear: \(jsonString)")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            throw NSError(domain: "updateProfile", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+        }
+        let res = try decoder.decode(Profile.self, from: jsonData)
+        print(res)
+        return res
     }
 }

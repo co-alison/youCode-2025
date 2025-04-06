@@ -138,27 +138,17 @@ struct ReturnView: View {
                             let mockLat = 51.0447
                             let mockLong = -114.0719
                             
-<<<<<<< Updated upstream
-                            try await dbService.updateGearUser(userId: userId, gearId: gearId, isActive: false)
-                            try await dbService.updateGear(
-                                id: gearId,
-                                currentCondition: condition,
-                                latitude: locationManager.latitude,
-                                longitude: locationManager.longitude,
-                                isAvailable: true
-                            )
-=======
                             do {
                                 try await dbService.updateGearUser(userId: userId, gearId: gearId, isActive: false)
                                 try await dbService.updateGear(
                                     id: gearId,
                                     currentCondition: condition,
-                                    latitude: mockLat,
-                                    longitude: mockLong,
+                                    latitude: locationManager.latitude,
+                                    longitude: locationManager.longitude,
                                     isAvailable: true
                                 )
+                                let _ = try await dbService.updateProfile(id: dbService.user!.id, points: (dbService.user?.points! ?? 0) + 1)
                                 
-                                // Reset state
                                 hasScanned = false
                                 nfcService.scannedText = ""
                                 selectedCondition = nil
@@ -166,7 +156,6 @@ struct ReturnView: View {
                             } catch {
                                 print("Error updating gear: \(error)")
                             }
->>>>>>> Stashed changes
                             
                             isPerformingTask = false
                         }
@@ -193,11 +182,13 @@ struct ReturnView: View {
             }
             .padding(.vertical)
         }
-<<<<<<< Updated upstream
         .padding(.bottom)
+        .navigationTitle("Return Item")
         .onAppear {
             locationManager.requestLocationPermission()
             locationManager.startUpdatingLocation()
+            selectedCondition = nil
+            locationText = ""
         }
     }
 }
@@ -232,13 +223,6 @@ struct ConditionButton: View {
                     .background(isSelected ? Color.gray.opacity(0.2) : Color.white)
                     .cornerRadius(8)
             )
-=======
-        .navigationTitle("Return Item")
-        .onAppear {
-            // Reset state when view appears
-            selectedCondition = nil
-            locationText = ""
->>>>>>> Stashed changes
         }
     }
 }

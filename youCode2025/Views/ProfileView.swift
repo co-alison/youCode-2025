@@ -13,7 +13,7 @@ struct ProfileView: View {
 //    @State private var userGear: [UserGearItem] = []
     @State private var allGearItemsForUser: [GearItem] = []
     @State private var activeGearItemsForUser: [GearItem] = []
-    @State private var isLoading = false
+    @State private var isLoading = true
 
     var body: some View {
         ScrollView {

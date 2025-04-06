@@ -13,7 +13,7 @@ struct Profile: Codable {
     let email: String
     let firstName: String
     let lastName: String
-    let points: Int? = 0
+    let points: Int?
     let distanceHiked: Int? = 0
     let elevationGained: Int? = 0
     let created_at: Date? = Date()

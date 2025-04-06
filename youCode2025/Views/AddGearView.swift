@@ -33,7 +33,7 @@ struct AddGearView: View {
 
                 // Section: Upload Photo
                 SectionHeader(title: "UPLOAD ITEM PHOTO")
-                ZStack {
+                VStack {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
                         .foregroundColor(.gray)
@@ -55,7 +55,7 @@ struct AddGearView: View {
                             }
                         )
 
-                    PhotosPicker("", selection: $selectedImage, matching: .images)
+                    PhotosPicker("Choose a photo", selection: $selectedImage, matching: .images)
                         .frame(width: 180, height: 180)
                         .contentShape(Rectangle())
                         .onChange(of: selectedImage) { newItem in
@@ -102,54 +102,37 @@ struct AddGearView: View {
                         }
                     }
                 }
-<<<<<<< Updated upstream
             
-            TextField("Gear Name: ex. Blundstone boots", text: $name)
-            TextField("Gear Description: ex. Size 4.5, Black", text: $description)
-            Picker("Gear Type", selection: $type) {
-                ForEach(GearItem.GearType.allCases, id: \.self) { gearType in
-                    Text(gearType.rawValue.capitalized)
-                }
-            }
-//            .pickerStyle(.menu)
-            Picker("Gear Condition", selection: $currentCondition) {
-                ForEach(GearItem.GearCondition.allCases, id: \.self) { gearCondition in
-                    Text(gearCondition.rawValue.capitalized)
-                }
-            }
+//            TextField("Gear Name: ex. Blundstone boots", text: $name)
+//            TextField("Gear Description: ex. Size 4.5, Black", text: $description)
+//            Picker("Gear Type", selection: $type) {
+//                ForEach(GearItem.GearType.allCases, id: \.self) { gearType in
+//                    Text(gearType.rawValue.capitalized)
+//                }
+//            }
+////            .pickerStyle(.menu)
+//            Picker("Gear Condition", selection: $currentCondition) {
+//                ForEach(GearItem.GearCondition.allCases, id: \.self) { gearCondition in
+//                    Text(gearCondition.rawValue.capitalized)
+//                }
+//            }
             
             Button(
                 action: {
-                isPerformingTask = true
-                Task {
-                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: locationManager.latitude, longitude: locationManager.longitude, isAvailable: isAvailable, gearUIImage: gearUIImage)
-                    guard let id = result.id else {
-                        print("Error finding newly-added Gear ID")
-                        return
-=======
-
-                // Add to Pool Button
-                Button(action: {
                     isPerformingTask = true
                     Task {
-                        let result = try await dbService.createGear(
-                            name: name,
-                            type: type,
-                            description: description,
-                            currentCondition: currentCondition,
-                            latitude: 0.0,
-                            longitude: 0.0,
-                            isAvailable: isAvailable,
-                            gearUIImage: gearUIImage
-                        )
+                        let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: locationManager.latitude, longitude: locationManager.longitude, isAvailable: isAvailable, gearUIImage: gearUIImage)
+                        
+                        let _ = try await dbService.updateProfile(id: dbService.user!.id, points: (dbService.user?.points! ?? 0) + 2)
+                        
                         guard let id = result.id else {
                             print("Error finding newly-added Gear ID")
                             return
                         }
+                        
                         nfcService.startWriting(with: String(id))
                         print("Added Gear \(id)")
                         isPerformingTask = false
->>>>>>> Stashed changes
                     }
                 }) {
                     if isPerformingTask {
