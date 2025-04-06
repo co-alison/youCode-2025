@@ -9,6 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct AddGearView: View {
+//    @Environment(\.dismiss) private var dismiss
     @StateObject private var nfcService = NFCService()
     @StateObject private var locationManager = LocationService()
     @ObservedObject private var dbService = DBService.shared
@@ -133,6 +134,7 @@ struct AddGearView: View {
                         nfcService.startWriting(with: String(id))
                         print("Added Gear \(id)")
                         isPerformingTask = false
+//                        dismiss()
                     }
                 }) {
                     if isPerformingTask {
