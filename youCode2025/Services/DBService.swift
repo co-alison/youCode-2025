@@ -464,6 +464,8 @@ class DBService: ObservableObject {
             throw NSError(domain: "getGearItemsForUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert gearIds data"])
         }
 
+        
+        
         struct GearIdWrapper: Codable {
             let gear_id: Int
         }
@@ -493,6 +495,49 @@ class DBService: ObservableObject {
 
         return gearItems
     }
+    
+    func getUserForGearItem(gearId: Int) async throws -> Profile? {
+        let userGearData = try await client
+            .from("UserGears")
+            .select("user_id")
+            .eq("gear_id", value: gearId)
+            .eq("is_active", value: true)
+            .single()
+            .execute()
+            .data
+
+        guard let userJsonString = String(data: userGearData, encoding: .utf8),
+              let userJsonData = userJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getUserForGearItem", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert userId data"])
+        }
+
+        struct UserIdWrapper: Codable {
+            let user_id: UUID
+        }
+
+        let userIdWrapper = try JSONDecoder().decode(UserIdWrapper.self, from: userJsonData)
+
+        let userData = try await client
+            .from("Profiles")
+            .select()
+            .eq("id", value: userIdWrapper.user_id.uuidString)
+            .single()
+            .execute()
+            .data
+
+        guard let userProfileJson = String(data: userData, encoding: .utf8),
+              let userProfileData = userProfileJson.data(using: .utf8) else {
+            throw NSError(domain: "getUserForGearItem", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert profile data"])
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+        let profile = try decoder.decode(Profile.self, from: userProfileData)
+        
+        
+        return profile
+    }
+
     
     func getActiveGearItemsForUser(userId: UUID) async throws -> [GearItem] {
         let userGearsData = try await client

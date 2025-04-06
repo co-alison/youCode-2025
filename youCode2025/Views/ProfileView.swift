@@ -30,7 +30,7 @@ struct ProfileView: View {
                 // Profile circle
                 Circle()
                     .fill(Color.primaryText)
-                    .frame(width: 200, height: 200)
+                    .frame(width: 120, height: 120)
                     .overlay(
                         Image(systemName: "person.fill")
                             .foregroundColor(.white)
