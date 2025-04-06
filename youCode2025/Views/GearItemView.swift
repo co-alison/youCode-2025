@@ -90,7 +90,7 @@ struct GearItemView: View {
 #Preview {
     GearItemView(gearItem: GearItem(
         id: 1,
-        createdAt: Date(),
+//        createdAt: Date(),
         name: "Cerium Jacket",
         type: .jacket,
         description: "A lightweight down jacket perfect for alpine adventures.",

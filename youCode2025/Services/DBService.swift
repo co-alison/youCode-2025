@@ -31,6 +31,8 @@ class DBService: ObservableObject {
     }
     
     
+    
+    
     init() {
         
         let config = URLSessionConfiguration.default
@@ -128,7 +130,7 @@ class DBService: ObservableObject {
             throw NSError(domain: "signIn", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
         }
 
-        print("Raw JSON response: \(jsonString)")
+        print("Raw JSON response - : \(jsonString)")
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
@@ -186,7 +188,7 @@ class DBService: ObservableObject {
             throw NSError(domain: "signIn", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
         }
 
-        print("Raw JSON response: \(jsonString)")
+        print("Raw JSON response - getAllGear: \(jsonString)")
 
         let decoder = JSONDecoder()
         
@@ -207,12 +209,49 @@ class DBService: ObservableObject {
         return []
     }
     
-//    // Gets one gear item by its ID
-//    func getGear(id: Int) async throws -> GearItem {
-//        return try await sendRequest(endpoint: "Gear", method: "GET", queryItems: [
-//            URLQueryItem(name: "id", value: "eq.\(id)")
-//        ]).first!
-//    }
+    // Gets one gear item by its ID
+    func getGear(id: Int) async throws -> GearItem {
+        let data = try await client
+            .from("Gear")
+            .select()
+            .eq("id", value: id)
+            .single()
+            .execute()
+            .data
+        
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "getGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
+        }
+
+        print("Raw JSON response - getGear: \(jsonString)")
+
+        let decoder = JSONDecoder()
+        
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+
+        
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            throw NSError(domain: "getGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+        }
+        let res = try decoder.decode(GearItem.self, from: jsonData)
+        print(res)
+        return res
+        
+        
+//        if let jsonData = jsonString.data(using: .utf8) {
+//            do {
+//                let gear = try decoder.decode(GearItem.self, from: jsonData)
+//
+//                return gear
+//            } catch {
+//                print("Decoding error: \(error)")
+//            }
+//        } else {
+//            print("Could not convert JSON string back to Data")
+//        }
+//        
+//        return nil
+    }
     
     // Creates a new gear item
     func createGear(name: String, type: GearItem.GearType, description: String,
@@ -220,7 +259,7 @@ class DBService: ObservableObject {
 
         let newGear = GearItem(
             id: nil,
-            createdAt: nil,
+//            createdAt: nil,
             name: name,
             type: type,
             description: description,
@@ -283,7 +322,7 @@ class DBService: ObservableObject {
             throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
         }
 
-        print("Raw JSON response: \(jsonString)")
+        print("Raw JSON response - updateGear: \(jsonString)")
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
@@ -291,8 +330,9 @@ class DBService: ObservableObject {
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
         }
-
-        return try decoder.decode(GearItem.self, from: jsonData)
+        let res = try decoder.decode(GearItem.self, from: jsonData)
+        print(res)
+        return res
     }
     
     
@@ -315,8 +355,30 @@ class DBService: ObservableObject {
 //    }
     
     // Connects a gear item to a user
-    func associateGearWithUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
-        let newLink = UserGearLink(userId: userId, gearId: gearId, isActive: true)
+    func associateGearWithUser(userId: UUID, gearId: Int) async throws -> UserGearLink {
+        if !(try await getGear(id: gearId).isAvailable) {
+            throw NSError(domain: "AppError", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch gear."])
+        }
+        
+        let response = try await client
+            .from("UserGears")
+              .select("*", head: true, count: .exact)
+              .eq("user_id", value: userId.uuidString)
+              .eq("gear_id", value: gearId)
+              .execute()
+
+        // Extract the count result
+        guard let count = response.count else {
+            throw NSError(domain: "SupabaseError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch count."])
+        }
+
+            // If the count is greater than 0, the link exists
+        if count > 0 {
+            print("Link already exists")
+            return try await updateGearUser(userId: userId, gearId: gearId, isActive: true)
+        }
+        
+        let newLink = UserGearLink(userGearId: nil, userId: userId, gearId: gearId, isActive: true)
 
         let data = try await client
             .from("UserGears")
@@ -330,7 +392,7 @@ class DBService: ObservableObject {
             throw NSError(domain: "associateGearWithUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
         }
 
-        print("Raw JSON response: \(jsonString)")
+        print("Raw JSON response - associateGearWithUser: \(jsonString)")
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
@@ -338,15 +400,23 @@ class DBService: ObservableObject {
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw NSError(domain: "associateGearWithUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
         }
+        
+        do {
+            let userGearItem = try decoder.decode(UserGearLink.self, from: jsonData)
+            return userGearItem
+        } catch {
+            print("Decoding error: \(error)")
+        }
+        
 
-        return try decoder.decode(UserGearItem.self, from: jsonData)
+        return try decoder.decode(UserGearLink.self, from: jsonData)
     }
 
     
-    func disassociateGearFromUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
+    func updateGearUser(userId: UUID, gearId: Int, isActive: Bool) async throws -> UserGearLink {
 
-        let update = UserGearLink(userId: userId, gearId: gearId, isActive: false)
-
+        let update = UserGearItemUpdate(isActive: isActive)
+        
         let data = try await client
             .from("UserGears")
             .update(update)
@@ -362,7 +432,7 @@ class DBService: ObservableObject {
 
         }
 
-        print("Raw JSON response: \(jsonString)")
+        print("Raw JSON response - disassociateGearFromUser: \(jsonString)")
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
@@ -370,8 +440,16 @@ class DBService: ObservableObject {
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw NSError(domain: "disassociateGearFromUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
         }
+        
+        do {
+            let userGearItem = try decoder.decode(UserGearLink.self, from: jsonData)
+            return userGearItem
+        } catch {
+            print("Decoding error: \(error)")
+        }
+        
 
-        return try decoder.decode(UserGearItem.self, from: jsonData)
+        return try decoder.decode(UserGearLink.self, from: jsonData)
     }
     
     func getGearItemsForUser(userId: UUID) async throws -> [GearItem] {
