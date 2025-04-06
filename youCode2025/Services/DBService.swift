@@ -369,4 +369,89 @@ class DBService: ObservableObject {
 
         return try decoder.decode(UserGearItem.self, from: jsonData)
     }
+    
+    func getGearItemsForUser(userId: UUID) async throws -> [GearItem] {
+        let userGearsData = try await client
+            .from("UserGears")
+            .select("gear_id")
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+            .data
+        guard let gearIdsJsonString = String(data: userGearsData, encoding: .utf8),
+              let gearIdsData = gearIdsJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getGearItemsForUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert gearIds data"])
+        }
+
+        struct GearIdWrapper: Codable {
+            let gear_id: Int
+        }
+
+        let gearIdWrappers = try JSONDecoder().decode([GearIdWrapper].self, from: gearIdsData)
+        let gearIds = gearIdWrappers.map { $0.gear_id }
+
+        if gearIds.isEmpty {
+            return []
+        }
+        
+        let gearData = try await client
+            .from("Gear")
+            .select()
+            .in("id", values: gearIds)
+            .execute()
+            .data
+
+        guard let gearJsonString = String(data: gearData, encoding: .utf8),
+              let gearJsonData = gearJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getGearItemsForUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert gear data"])
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+        let gearItems = try decoder.decode([GearItem].self, from: gearJsonData)
+
+        return gearItems
+    }
+    
+    func getActiveGearItemsForUser(userId: UUID) async throws -> [GearItem] {
+        let userGearsData = try await client
+            .from("UserGears")
+            .select("gear_id")
+            .eq("user_id", value: userId.uuidString)
+            .eq("is_active", value: true)
+            .execute()
+            .data
+        guard let gearIdsJsonString = String(data: userGearsData, encoding: .utf8),
+              let gearIdsData = gearIdsJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getGearItemsForUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert gearIds data"])
+        }
+
+        struct GearIdWrapper: Codable {
+            let gear_id: Int
+        }
+
+        let gearIdWrappers = try JSONDecoder().decode([GearIdWrapper].self, from: gearIdsData)
+        let gearIds = gearIdWrappers.map { $0.gear_id }
+
+        if gearIds.isEmpty {
+            return []
+        }
+        
+        let gearData = try await client
+            .from("Gear")
+            .select()
+            .in("id", values: gearIds)
+            .execute()
+            .data
+
+        guard let gearJsonString = String(data: gearData, encoding: .utf8),
+              let gearJsonData = gearJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getGearItemsForUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert gear data"])
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+        let gearItems = try decoder.decode([GearItem].self, from: gearJsonData)
+
+        return gearItems
+    }
 }

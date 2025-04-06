@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ProfileView: View {
     @ObservedObject private var dbService = DBService.shared
-    @State private var userGear: [UserGearItem] = []
+//    @State private var userGear: [UserGearItem] = []
+    @State private var allGearItemsForUser: [GearItem] = []
+    @State private var activeGearItemsForUser: [GearItem] = []
     @State private var isLoading = false
 
     var body: some View {
@@ -67,7 +69,7 @@ struct ProfileView: View {
                 HStack {
                     StatLabel(title: "donations:")
                     Spacer()
-                    StatLabel(title: "borrows: \(userGear.count)")
+                    StatLabel(title: "borrows: \(allGearItemsForUser.count)")
                 }
                 .padding(.horizontal)
 
@@ -82,14 +84,14 @@ struct ProfileView: View {
                         ProgressView()
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding()
-                    } else if userGear.isEmpty {
+                    } else if allGearItemsForUser.isEmpty {
                         Text("No gear items found")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding()
                             .background(Color.cardBackground)
                             .cornerRadius(10)
                     } else {
-                        ForEach(userGear.prefix(3), id: \.id) { item in
+                        ForEach(activeGearItemsForUser) { item in
                             HStack {
                                 Rectangle()
                                     .fill(Color.accent)
@@ -97,14 +99,13 @@ struct ProfileView: View {
                                     .cornerRadius(8)
 
                                 VStack(alignment: .leading) {
-                                    Text(item.gear?.name ?? "Unknown Item")
+                                    Text(item.name)
                                         .font(.headline)
                                         .foregroundColor(.primaryText)
-                                    if let condition = item.gear?.currentCondition {
-                                        Text("Condition: \(condition)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.primaryText.opacity(0.8))
-                                    }
+                                    Text("Condition: \(item.currentCondition)")
+                                        .font(.subheadline)
+                                        .foregroundColor(.primaryText.opacity(0.8))
+                                    
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 8)
@@ -120,7 +121,15 @@ struct ProfileView: View {
             }
             .padding(.vertical)
             .onAppear {
-                loadUserGear()
+                Task {
+                    do {
+                        allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                        activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                        isLoading = false
+                    } catch {
+                        print("Error fetching users: \(error)")
+                    }
+                }
             }
         }
         .background(Color.background.edgesIgnoringSafeArea(.all))
