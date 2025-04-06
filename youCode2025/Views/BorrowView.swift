@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct BorrowView: View {
+//    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
 
@@ -55,7 +56,7 @@ struct BorrowView: View {
                 }
             } else {
                 VStack(spacing: 16) {
-                    Text("Scanned Item ID: \(nfcService.scannedText)")
+                    Text("Scanned Item ID: \(nfcService.scannedText)")// TODO: update display
                         .font(.subheadline)
 
                     Button(action: {
@@ -74,6 +75,7 @@ struct BorrowView: View {
                                     DispatchQueue.main.async {
                                         isPerformingTask = false
                                         gearIsCurrentlyBorrowed = true
+//                                        dismiss()
                                     }
                                 }
                             }
