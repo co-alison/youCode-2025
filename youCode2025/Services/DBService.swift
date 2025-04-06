@@ -51,7 +51,6 @@ class DBService: ObservableObject {
             .from("Profiles")
             .insert([profile])
             .execute()
-
         
         await MainActor.run {
             self.user = profile
@@ -183,9 +182,19 @@ class DBService: ObservableObject {
         return try await sendRequest(
             endpoint: "UserGears",
             method: "POST",
-            body: ["userID": userId.uuidString, "gearID": gearId]
+            body: ["user_id": userId.uuidString, "gear_id": gearId, "is_active": true]
         ).first!
     }
+    
+    func disassociateGearFromUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
+        return try await sendRequest(
+            endpoint: "UserGears",
+            method: "POST",
+            body: ["user_id": userId.uuidString, "gear_id": gearId, "is_active": true]
+        ).first!
+    }
+    
+    
     
     
     

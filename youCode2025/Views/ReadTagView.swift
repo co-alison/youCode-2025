@@ -9,20 +9,34 @@ import SwiftUI
 
 struct ReadTagView: View {
     @StateObject private var nfcService = NFCService()
+    @ObservedObject private var dbService = DBService.shared
+    private var status: Status
 
     var body: some View {
         VStack(spacing: 24) {
-            Text("NFC Tag Reader")
+            Text("Scan a Tag")
                 .font(.title)
                 .bold()
-
-            HStack(spacing: 20) {
-                Button("Read Tag") {
-                    nfcService.startReading()
+            
+            
+            switch status {
+            case .borrowing:
+                Button("Confirm Transfer") {
+                    dbService.associateGearWithUser(userId: dbService.user?.id, gearId: <#T##Int#>)
                 }
-                .buttonStyle(.borderedProminent)
-
+                Button("Cancel Transfer") {
+                    
+                }
+            case .returning:
+                
+            case .adding:
+                
+                
             }
+                .onAppear(nfcService.startReading())
+        
+
+            
 
             if !nfcService.scannedText.isEmpty {
                 VStack(alignment: .leading) {
@@ -44,6 +58,15 @@ struct ReadTagView: View {
             Spacer()
         }
         .padding()
+    }
+}
+
+extension ReadTagView {
+    enum Status {
+        case idle
+        case borrowing
+        case returning
+        case adding
     }
 }
 
