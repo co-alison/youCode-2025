@@ -99,14 +99,16 @@ struct AddGearView: View {
                             currentCondition = condition
                         }) {
                             Text(condition.rawValue.capitalized)
-                                .padding()
+                                .padding(.vertical, 12)
                                 .frame(maxWidth: .infinity)
                                 .background(currentCondition == condition ? Color.black : Color(.systemGray5))
                                 .foregroundColor(currentCondition == condition ? .white : .black)
                                 .cornerRadius(10)
+                                .font(.subheadline)
                         }
                     }
                 }
+                .padding(.horizontal)
             
 //            TextField("Gear Name: ex. Blundstone boots", text: $name)
 //            TextField("Gear Description: ex. Size 4.5, Black", text: $description)
