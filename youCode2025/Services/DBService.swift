@@ -60,26 +60,47 @@ class DBService: ObservableObject {
     
     func signIn(email: String, password: String) async throws {
         let session = try await client.auth.signIn(email: email, password: password)
-        
         let user = session.user
 
-        // Fetch the user's profile from Supabase
+        print("User ID:", user.id.uuidString)
+
         let data = try await client
             .from("Profiles")
             .select()
-            .eq(user.id.uuidString, value: "id")
-            .single() // Expecting only one profile
+            .eq("id", value: user.id.uuidString)
+            .single()
             .execute()
             .data
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let profile = try decoder.decode([Profile].self, from: data).first
-        
 
-        await MainActor.run {
-            self.user = profile
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "signIn", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
+        }
+
+        print("Raw JSON response: \(jsonString)")
+
+        let decoder = JSONDecoder()
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX" // Supports timezones like +00:00
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        if let jsonData = jsonString.data(using: .utf8) {
+            do {
+                let profile = try decoder.decode(Profile.self, from: jsonData)
+
+                await MainActor.run {
+                    self.user = profile
+                }
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        } else {
+            print("Could not convert JSON string back to Data")
         }
     }
+
 
     
     func signOut() async throws {
