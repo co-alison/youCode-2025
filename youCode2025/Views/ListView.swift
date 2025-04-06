@@ -22,9 +22,32 @@ struct ListView: View {
 //                        showGearItemView = true
                     } label: {
                         HStack {
+                            ZStack {
+                                if let urlString = gearItem.gearPhotoURL,
+                                   let imageURL = URL(string: urlString) {
+                                    AsyncImage(url: imageURL) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 240, height: 240)
+                                            .clipped()
+                                            .cornerRadius(10)
+                                    } placeholder: {
+                                        ProgressView()
+                                            .frame(width: 240, height: 240)
+                                    }
+                                } else {
+                                    Image("ceriumjacket") // placeholder
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 240, height: 240)
+                                        .clipped()
+                                        .cornerRadius(10)
+                                }
+                            }
                             Image(systemName: "gear")
                                 .resizable()
-                                .frame(width: 80, height: 80)
+                                .frame(width: 50, height: 50)
                                 .clipped()
                                 .cornerRadius(10)
                             Text(gearItem.name)

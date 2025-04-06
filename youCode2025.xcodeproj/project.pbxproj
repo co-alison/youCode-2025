@@ -303,6 +303,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = youCode2025/Info.plist;
 				INFOPLIST_KEY_NFCReaderUsageDescription = "This app uses NFC to scan for fish tags";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Users can upload gear/profile photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -335,6 +336,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = youCode2025/Info.plist;
 				INFOPLIST_KEY_NFCReaderUsageDescription = "This app uses NFC to scan for fish tags";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Users can upload gear/profile photos";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

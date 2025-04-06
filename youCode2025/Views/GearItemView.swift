@@ -15,13 +15,29 @@ struct GearItemView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Image Placeholder
-                Image("ceriumjacket") // Replace with actual image asset name
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 240)
-                    .clipped()
-                    .cornerRadius(10)
+                ZStack {
+                    if let urlString = gearItem.gearPhotoURL,
+                       let imageURL = URL(string: urlString) {
+                        AsyncImage(url: imageURL) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 240, height: 240)
+                                .clipped()
+                                .cornerRadius(10)
+                        } placeholder: {
+                            ProgressView()
+                                .frame(width: 240, height: 240)
+                        }
+                    } else {
+                        Image("ceriumjacket") // placeholder
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 240, height: 240)
+                            .clipped()
+                            .cornerRadius(10)
+                    }
+                }
 
                 // Title & Info
                 VStack(alignment: .leading, spacing: 4) {
@@ -97,6 +113,7 @@ struct GearItemView: View {
         currentCondition: .excellent,
         latitude: 49.2827,
         longitude: -123.1207,
-        isAvailable: true
+        isAvailable: true,
+        gearPhotoURL: nil
     ))
 }

@@ -9,6 +9,7 @@
 import Supabase
 import Combine
 import Foundation
+import PhotosUI
 
 
 
@@ -54,22 +55,57 @@ class DBService: ObservableObject {
         }
     }
     
-    func signUp(email: String, password: String, firstName: String, lastName: String) async throws {
+//    func signUp(email: String, password: String, firstName: String, lastName: String) async throws {
+//        let result = try await client.auth.signUp(email: email, password: password)
+//
+//        let user = result.user
+//
+//        let profile = Profile(id: user.id, email: email, firstName: firstName, lastName: lastName)
+//
+//        let _ = try await client
+//            .from("Profiles")
+//            .insert([profile])
+//            .execute()
+//        
+//        await MainActor.run {
+//            self.user = profile
+//        }
+//    }
+    
+    func signUp(
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        profileUIImage: UIImage?
+    ) async throws {
         let result = try await client.auth.signUp(email: email, password: password)
-
         let user = result.user
 
-        let profile = Profile(id: user.id, email: email, firstName: firstName, lastName: lastName)
+        var imageURL: String? = nil
+        if let imageData = profileUIImage?.jpegData(compressionQuality: 0.8) {
+            imageURL = try await uploadProfileImage(userId: user.id, imageData: imageData)
+        }
 
-        let insertResponse = try await client
+        let profile = Profile(
+            id: user.id,
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            profilePhotoURL: imageURL
+        )
+
+        _ = try await client
             .from("Profiles")
             .insert([profile])
             .execute()
-        
+
         await MainActor.run {
             self.user = profile
         }
     }
+
+
     
     func signIn(email: String, password: String) async throws {
         let session = try await client.auth.signIn(email: email, password: password)
@@ -254,10 +290,19 @@ class DBService: ObservableObject {
     }
     
     // Creates a new gear item
-    func createGear(name: String, type: GearItem.GearType, description: String,
-                    currentCondition: GearItem.GearCondition, latitude: Double, longitude: Double, isAvailable: Bool) async throws -> GearItem {
+    func createGear(
+        name: String,
+        type: GearItem.GearType,
+        description: String,
+        currentCondition: GearItem.GearCondition,
+        latitude: Double,
+        longitude: Double,
+        isAvailable: Bool,
+        gearUIImage: UIImage?
+    ) async throws -> GearItem {
 
-        let newGear = GearItem(
+        // Step 1: Insert gear WITHOUT imageURL
+        var newGear = GearItem(
             id: nil,
 //            createdAt: nil,
             name: name,
@@ -266,10 +311,11 @@ class DBService: ObservableObject {
             currentCondition: currentCondition,
             latitude: latitude,
             longitude: longitude,
-            isAvailable: isAvailable
+            isAvailable: isAvailable,
+            gearPhotoURL: nil
         )
 
-        let data = try await client
+        let insertedData = try await client
             .from("Gear")
             .insert([newGear])
             .select()
@@ -280,18 +326,50 @@ class DBService: ObservableObject {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
 
-        guard let jsonString = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "createGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
+        guard let insertedJsonString = String(data: insertedData, encoding: .utf8),
+              let insertedJsonData = insertedJsonString.data(using: .utf8) else {
+            throw NSError(domain: "createGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse inserted gear"])
         }
 
-        print("Raw JSON response: \(jsonString)")
+        var insertedGear = try decoder.decode(GearItem.self, from: insertedJsonData)
 
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            throw NSError(domain: "createGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+        // Step 2: Upload image if provided
+        if let gearUIImage = gearUIImage,
+           let imageData = gearUIImage.jpegData(compressionQuality: 0.8),
+           let gearId = insertedGear.id {
+            let imageURL = try await uploadGearImage(gearId: gearId, imageData: imageData)
+
+            // Step 3: Update gear with imageURL
+            struct UpdatePayload: Codable {
+                let gearPhotoURL: String
+                
+                enum CodingKeys: String, CodingKey {
+                    case gearPhotoURL = "gear_photo_url"
+                }
+            }
+            
+            let updatePayload = UpdatePayload(gearPhotoURL: imageURL)
+
+            let updatedData = try await client
+                .from("Gear")
+                .update(updatePayload)
+                .eq("id", value: gearId)
+                .select()
+                .single()
+                .execute()
+                .data
+
+            guard let updatedJsonString = String(data: updatedData, encoding: .utf8),
+                  let updatedJsonData = updatedJsonString.data(using: .utf8) else {
+                throw NSError(domain: "createGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse updated gear"])
+            }
+
+            insertedGear = try decoder.decode(GearItem.self, from: updatedJsonData)
         }
 
-        return try decoder.decode(GearItem.self, from: jsonData)
+        return insertedGear
     }
+
     
     // Updates a gear item
     func updateGear(
@@ -580,5 +658,39 @@ class DBService: ObservableObject {
         let gearItems = try decoder.decode([GearItem].self, from: gearJsonData)
 
         return gearItems
+    }
+    
+    func uploadProfileImage(userId: UUID, imageData: Data, fileExtension: String = "jpg") async throws -> String {
+        let filePath = "profiles/\(userId.uuidString).\(fileExtension)"
+        let bucket = client.storage.from("profile-photos")
+
+        _ = try await bucket.upload(
+            filePath,
+            data: imageData,
+            options: FileOptions(contentType: "image/\(fileExtension)", upsert: true)
+        )
+
+    return try bucket.getPublicURL(path: filePath, download: false).absoluteString
+    }
+    
+    func uploadGearImage(gearId: Int, imageData: Data, fileExtension: String = "jpg") async throws -> String {
+        let filePath = "gear/\(gearId).\(fileExtension)"
+        let bucket = client.storage.from("gear-photos")
+
+        _ = try await bucket.upload(
+            filePath,
+            data: imageData,
+            options: FileOptions(contentType: "image/\(fileExtension)", upsert: true)
+        )
+
+        return try bucket.getPublicURL(path: filePath, download: false).absoluteString
+    }
+
+    func updateProfileImageURL(for userId: UUID, imageURL: String) async throws {
+        _ = try await client
+            .from("Profiles")
+            .update(["profile_image_url": imageURL])
+            .eq("id", value: userId.uuidString)
+            .execute()
     }
 }
