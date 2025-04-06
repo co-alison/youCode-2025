@@ -24,7 +24,7 @@ struct BorrowView: View {
                     isPerformingTask = true
                     Task {
                         try await dbService.associateGearWithUser(userId: dbService.user!.id, gearId: Int(nfcService.scannedText)!)
-                        try await dbService.updateGear(id: Int(nfcService.scannedText)!, updates: ["is_borrowed": true])
+                        try await dbService.updateGear(id: Int(nfcService.scannedText)!, isAvailable: false)
                         isPerformingTask = false
                     }
                     print(nfcService.scannedText)

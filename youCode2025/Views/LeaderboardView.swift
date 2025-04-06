@@ -92,7 +92,14 @@ struct LeaderboardView: View {
             }
             .navigationTitle("Leaderboard")
             .onAppear {
-                loadUsers()
+                Task {
+                    do {
+                        users = try await dbService.getUsers()
+                        isLoading = false
+                    } catch {
+                        print("Error fetching users: \(error)")
+                    }
+                }
             }
         }
     }

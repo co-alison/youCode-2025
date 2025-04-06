@@ -133,12 +133,13 @@ struct ProfileView: View {
 
         Task {
             do {
-                let items = try await dbService.getUserGear(userId: userId)
-
-                await MainActor.run {
-                    self.userGear = items
-                    self.isLoading = false
-                }
+//                let items = try await dbService.getUserGear(userId: userId)
+//                let items = []
+//
+//                await MainActor.run {
+//                    self.userGear = items
+//                    self.isLoading = false
+//                }
             } catch {
                 print("Error loading user gear: \(error)")
                 await MainActor.run {

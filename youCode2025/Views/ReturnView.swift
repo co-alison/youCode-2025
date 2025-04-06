@@ -25,7 +25,7 @@ struct ReturnView: View {
                     isPerformingTask = true
                     Task {
                         try await dbService.disassociateGearFromUser(userId: dbService.user!.id, gearId: Int(nfcService.scannedText)!)
-                        try await dbService.updateGear(id: Int(nfcService.scannedText)!, updates: ["is_borrowed": false])
+                        try await dbService.updateGear(id: Int(nfcService.scannedText)!, isAvailable: true)
                         isPerformingTask = false
                     }
                     print(nfcService.scannedText)

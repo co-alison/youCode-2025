@@ -9,8 +9,8 @@ import Foundation
 
 struct GearItem: Codable, Identifiable {
     
-    let id: Int
-    let createdAt: Date
+    let id: Int?
+    let createdAt: Date?
     let name: String
     let type: GearType
     let description: String

@@ -15,21 +15,21 @@ class GearRepository {
     }
     
     // Get a user and all their gear
-    func getUserWithGear(userId: UUID) async throws -> (Profile, [GearItem]) {
-        // Get the user
-        let user = try await supabase.getUser(id: userId)
-        
-        // Get all gear associated with the user
-        let userGears = try await supabase.getUserGear(userId: userId)
-        let gear = userGears.compactMap { $0.gear }
-        
-        return (user, gear)
-    }
+//    func getUserWithGear(userId: UUID) async throws -> (Profile, [GearItem]) {
+//        // Get the user
+//        let user = try await supabase.getUser(id: userId)
+//        
+//        // Get all gear associated with the user
+//        let userGears = try await supabase.getUserGear(userId: userId)
+//        let gear = userGears.compactMap { $0.gear }
+//        
+//        return (user, gear)
+//    }
     
     // Add a gear item to a user
-    func addGearToUser(userId: UUID, gear: GearItem) async throws {
-        _ = try await supabase.associateGearWithUser(userId: userId, gearId: gear.id)
-    }
+//    func addGearToUser(userId: UUID, gear: GearItem) async throws {
+//        _ = try await supabase.associateGearWithUser(userId: userId, gearId: gear.id)
+//    }
     
     // Find gear near a location
     func getGearWithinRadius(latitude: Double, longitude: Double, radiusInKm: Double) async throws -> [GearItem] {
