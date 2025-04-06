@@ -14,13 +14,13 @@ struct AddGearView: View {
     @ObservedObject private var dbService = DBService.shared
     
     var gear_id: Int?
-    @State private var isPerformingTask = false
     
+    @State private var isPerformingTask = false
     @State private var name: String = ""
     @State private var createdAt: Date?
-    @State private var type: GearItem.GearType = GearItem.GearType.backpack
+    @State private var type: GearItem.GearType = .backpack
     @State private var description: String = ""
-    @State private var currentCondition: GearItem.GearCondition = GearItem.GearCondition.excellent
+    @State private var currentCondition: GearItem.GearCondition = .excellent
     @State private var latitude: Double = 0.0
     @State private var longitude: Double = 0.0
     @State private var isAvailable = true
@@ -28,27 +28,81 @@ struct AddGearView: View {
     @State private var gearUIImage: UIImage?
 
     var body: some View {
-        VStack {
-            if let gearUIImage = gearUIImage {
-                Image(uiImage: gearUIImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 300, height: 300)
-                    .cornerRadius(10)
-                    .padding()
-            }
-            
-            PhotosPicker("Select Gear Photo", selection:
-                $selectedImage, matching: .images)
-                .padding()
-                .onChange(of: selectedImage) { newItem in
-                    Task {
-                        if let data = try? await newItem?.loadTransferable(type: Data.self),
-                           let image = UIImage(data: data) {
-                            gearUIImage = image
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+
+                // Section: Upload Photo
+                SectionHeader(title: "UPLOAD ITEM PHOTO")
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
+                        .foregroundColor(.gray)
+                        .frame(height: 180)
+                        .overlay(
+                            Group {
+                                if let gearUIImage = gearUIImage {
+                                    Image(uiImage: gearUIImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(maxWidth: .infinity)
+                                } else {
+                                    Image(systemName: "arrow.up.to.line.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        )
+
+                    PhotosPicker("", selection: $selectedImage, matching: .images)
+                        .frame(width: 180, height: 180)
+                        .contentShape(Rectangle())
+                        .onChange(of: selectedImage) { newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                   let image = UIImage(data: data) {
+                                    gearUIImage = image
+                                }
+                            }
+                        }
+                }
+
+                // Section: Item Info
+                SectionHeader(title: "INPUT ITEM INFORMATION")
+                VStack(spacing: 12) {
+                    TextField("Item Name", text: $name)
+                        .textFieldStyle(.roundedBorder)
+
+                    TextField("Color Name", text: $description)
+                        .textFieldStyle(.roundedBorder)
+
+                    Picker("Category", selection: $type) {
+                        ForEach(GearItem.GearType.allCases, id: \.self) {
+                            Text($0.rawValue.capitalized)
+                        }
+                    }
+                    .pickerStyle(.menu)
+
+                }
+
+                // Section: Report Condition
+                SectionHeader(title: "REPORT CONDITION")
+                HStack(spacing: 8) {
+                    ForEach(GearItem.GearCondition.allCases, id: \.self) { condition in
+                        Button(action: {
+                            currentCondition = condition
+                        }) {
+                            Text(condition.rawValue.capitalized)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(currentCondition == condition ? Color.black : Color(.systemGray5))
+                                .foregroundColor(currentCondition == condition ? .white : .black)
+                                .cornerRadius(10)
                         }
                     }
                 }
+<<<<<<< Updated upstream
             
             TextField("Gear Name: ex. Blundstone boots", text: $name)
             TextField("Gear Description: ex. Size 4.5, Black", text: $description)
@@ -72,21 +126,48 @@ struct AddGearView: View {
                     guard let id = result.id else {
                         print("Error finding newly-added Gear ID")
                         return
+=======
+
+                // Add to Pool Button
+                Button(action: {
+                    isPerformingTask = true
+                    Task {
+                        let result = try await dbService.createGear(
+                            name: name,
+                            type: type,
+                            description: description,
+                            currentCondition: currentCondition,
+                            latitude: 0.0,
+                            longitude: 0.0,
+                            isAvailable: isAvailable,
+                            gearUIImage: gearUIImage
+                        )
+                        guard let id = result.id else {
+                            print("Error finding newly-added Gear ID")
+                            return
+                        }
+                        nfcService.startWriting(with: String(id))
+                        print("Added Gear \(id)")
+                        isPerformingTask = false
+>>>>>>> Stashed changes
                     }
-                    nfcService.startWriting(with: String(id))
-                    print("Added Gear \(String(id))")
-                    isPerformingTask = false
-                }
-            },
-                label: {
+                }) {
                     if isPerformingTask {
                         ProgressView()
+                            .frame(maxWidth: .infinity)
                     } else {
-                        Text("Scan Tag to Add Gear")
+                        Text("ADD TO POOL")
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
                 }
-            )
-            .disabled(isPerformingTask)
+                .disabled(isPerformingTask)
+            }
+            .padding()
         }
         .onAppear {
             locationManager.requestLocationPermission()
@@ -95,6 +176,16 @@ struct AddGearView: View {
     }
 }
 
+struct SectionHeader: View {
+    var title: String
+    var body: some View {
+        Text(title)
+            .font(.headline)
+            .padding(.bottom, 4)
+            .overlay(Divider(), alignment: .bottom)
+    }
+}
+
 #Preview {
-    BorrowView()
+    AddGearView()
 }

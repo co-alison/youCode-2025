@@ -9,70 +9,105 @@ import SwiftUI
 struct BorrowView: View {
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
+
     var gear_id: Int?
     @State private var isPerformingTask = false
     @State private var gearIsCurrentlyBorrowed = false
-    @State private var tagAdded = false
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 24) {
             if gearIsCurrentlyBorrowed {
-                Text("This piece of gear is already borrowed. Try scanning another item.")
-                Button("OK") {
-                    gearIsCurrentlyBorrowed = false
-                    nfcService.scannedText = ""
+                VStack(spacing: 16) {
+                    Text("⚠️ This piece of gear is already borrowed.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .padding()
+
+                    Button(action: {
+                        gearIsCurrentlyBorrowed = false
+                        nfcService.scannedText = ""
+                    }) {
+                        Text("OK")
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                }
+            } else if nfcService.scannedText.isEmpty {
+                VStack(spacing: 16) {
+                    Text("Ready to borrow gear?")
+                        .font(.title2)
+                        .bold()
+
+                    Button(action: {
+                        nfcService.startReading()
+                    }) {
+                        Text("Scan Tag to Borrow Item")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
                 }
             } else {
-                if (nfcService.scannedText.isEmpty) {
-                    Button("Scan Tag to Borrow Item") {
-                        nfcService.startReading()
-                    }
-                } else {
-                    Button(
-                        action: {
-                            isPerformingTask = true
-                            Task {
-                                do {
-                                    print("userid: \(dbService.user!.id)")
-                                    print("scanned text: \(nfcService.scannedText)")
-                                    let x = try await dbService.associateGearWithUser(userId: dbService.user!.id, gearId: Int(nfcService.scannedText)!)
-                                    let y = try await dbService.updateGear(id: Int(nfcService.scannedText)!, isAvailable: false)
-                                    isPerformingTask = false
-                                    nfcService.scannedText = ""
-                                } catch let error as NSError {
-                                    if error.domain == "AppError" && error.code == 1001 {
-                                        DispatchQueue.main.async {
-                                            isPerformingTask = false
-                                            gearIsCurrentlyBorrowed = true
-                                        }
-                                        return
+                VStack(spacing: 16) {
+                    Text("Scanned Item ID: \(nfcService.scannedText)")
+                        .font(.subheadline)
+
+                    Button(action: {
+                        isPerformingTask = true
+                        Task {
+                            do {
+                                guard let userId = dbService.user?.id,
+                                      let scannedId = Int(nfcService.scannedText) else { return }
+
+                                _ = try await dbService.associateGearWithUser(userId: userId, gearId: scannedId)
+                                _ = try await dbService.updateGear(id: scannedId, isAvailable: false)
+                                isPerformingTask = false
+                                nfcService.scannedText = ""
+                            } catch let error as NSError {
+                                if error.domain == "AppError" && error.code == 1001 {
+                                    DispatchQueue.main.async {
+                                        isPerformingTask = false
+                                        gearIsCurrentlyBorrowed = true
                                     }
                                 }
                             }
-                            print(nfcService.scannedText)
-                        
-                    },
-                        label: {
-                            if isPerformingTask {
-                                ProgressView()
-                            } else {
-                                Text("Confirm Borrow")
-                            }
                         }
-                    )
+                    }) {
+                        if isPerformingTask {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Text("Confirm Borrow")
+                                .bold()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.black)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
                     .disabled(isPerformingTask)
-                    
-                    Button("Cancel Borrow") {
-                        print("Cancelled")
+
+                    Button(action: {
+                        nfcService.scannedText = ""
+                    }) {
+                        Text("Cancel Borrow")
+                            .foregroundColor(.red)
                     }
                 }
             }
-            
         }
-        
+        .padding()
     }
 }
 
 #Preview {
     BorrowView()
+        .environmentObject(NFCService())
 }
