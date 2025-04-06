@@ -31,12 +31,13 @@ struct GearItem: Codable, Identifiable {
         case isAvailable = "is_available"
     }
     
-    enum GearType: String, Codable {
-        case shoes
+    enum GearType: String, CaseIterable, Codable {
+        case boots
         case jacket
         case pants
         case hat
         case backpack
+        case safety
     }
     
     func toJSONString() -> String? {
