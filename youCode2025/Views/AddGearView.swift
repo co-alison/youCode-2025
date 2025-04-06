@@ -66,11 +66,7 @@ struct AddGearView: View {
                 action: {
                 isPerformingTask = true
                 Task {
-<<<<<<< Updated upstream
-                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: isAvailable)
-=======
-                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: true, gearUIImage: gearUIImage)
->>>>>>> Stashed changes
+                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: isAvailable, gearUIImage: gearUIImage)
                     guard let id = result.id else {
                         print("Error finding newly-added Gear ID")
                         return
