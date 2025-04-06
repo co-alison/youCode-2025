@@ -5,6 +5,7 @@ struct HomePageView: View {
     @State private var gearItems: [GearItem] = []
     @State private var selectedTab = 0
     @State private var searchText: String = ""
+    @State private var userNeedsRefresh: Bool = false
     
     let gearTypes: [String] = GearItem.GearType.allCases.map { $0.rawValue.capitalized }
     
@@ -68,7 +69,7 @@ struct HomePageView: View {
             }
             .tag(0)
 
-            ReadTagView()
+            ReadTagView(userNeedsRefresh: $userNeedsRefresh)
                 .tabItem {
                     Image(systemName: "camera.fill")
                     Text("Scan")
@@ -82,7 +83,7 @@ struct HomePageView: View {
                 }
                 .tag(2)
 
-            ProfileView(selectedTab: $selectedTab)
+            ProfileView(selectedTab: $selectedTab, userNeedsRefresh: $userNeedsRefresh)
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("Profile")

@@ -13,6 +13,7 @@ struct ReturnView: View {
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
     @StateObject private var locationManager = LocationService()
+    @Binding var userNeedsRefresh: Bool
     
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
@@ -165,6 +166,7 @@ struct ReturnView: View {
                                 )
                                 let _ = try await dbService.updateProfile(id: dbService.user!.id, points: (dbService.user?.points! ?? 0) + 1)
                                 
+                                userNeedsRefresh = true
                                 nfcService.scannedText = ""
                                 selectedCondition = nil
                                 locationText = ""
@@ -243,7 +245,7 @@ struct ConditionButton: View {
 
 #Preview {
     NavigationView {
-        ReturnView()
-            .environmentObject(NFCService())
+//        ReturnView()
+//            .environmentObject(NFCService())
     }
 }

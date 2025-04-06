@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @Binding var selectedTab: Int
+    @Binding var userNeedsRefresh: Bool
     @ObservedObject private var dbService = DBService.shared
 //    @State private var userGear: [UserGearItem] = []
     @State private var allGearItemsForUser: [GearItem] = []
@@ -156,10 +157,13 @@ struct ProfileView: View {
             .onAppear {
                 Task {
                     do {
-                        allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
-                        activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                        user = try await dbService.getUser(id: dbService.user!.id)
-                        isLoading = false
+                        if userNeedsRefresh {
+                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                            user = try await dbService.getUser(id: dbService.user!.id)
+                            isLoading = false
+                            userNeedsRefresh = false
+                        }
                     } catch {
                         print("Error fetching users: \(error)")
                     }
@@ -169,10 +173,13 @@ struct ProfileView: View {
                 if newTab == 3 {
                     Task {
                         do {
-                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
-                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                            user = try await dbService.getUser(id: dbService.user!.id)
-                            isLoading = false
+                            if userNeedsRefresh {
+                                allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                                activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                                user = try await dbService.getUser(id: dbService.user!.id)
+                                isLoading = false
+                                userNeedsRefresh = false
+                            }
                         } catch {
                             print("Error fetching users: \(error)")
                         }

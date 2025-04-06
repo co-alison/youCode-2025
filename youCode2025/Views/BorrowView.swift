@@ -10,6 +10,7 @@ struct BorrowView: View {
 //    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
+    @Binding var userNeedsRefresh: Bool
 
     var gear_id: Int?
     @State private var isPerformingTask = false
@@ -67,6 +68,7 @@ struct BorrowView: View {
                                 _ = try await dbService.associateGearWithUser(userId: userId, gearId: scannedId)
                                 _ = try await dbService.updateGear(id: scannedId, isAvailable: false)
                                 
+                                userNeedsRefresh = true
                                 isPerformingTask = false
                                 nfcService.scannedText = ""
                             } catch let error as NSError {
@@ -110,6 +112,6 @@ struct BorrowView: View {
 }
 
 #Preview {
-    BorrowView()
-        .environmentObject(NFCService())
+//    BorrowView()
+//        .environmentObject(NFCService())
 }
