@@ -152,6 +152,18 @@ struct ProfileView: View {
                 }
             }
             .padding(.vertical)
+            .onAppear {
+                Task {
+                    do {
+                        allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                        activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                        _ = try await dbService.getUser(id: dbService.user!.id)
+                        isLoading = false
+                    } catch {
+                        print("Error fetching users: \(error)")
+                    }
+                }
+            }
             .onChange(of: selectedTab) { newTab in
                 if newTab == 3 {
                     Task {
