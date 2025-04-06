@@ -143,7 +143,39 @@ class DBService: ObservableObject {
     
     // Gets all gear items
     func getAllGear() async throws -> [GearItem] {
-        return try await sendRequest(endpoint: "Gear", method: "GET")
+        let data = try await client
+            .from("Gear")
+            .select()
+            .execute()
+            .data
+        
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "signIn", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
+        }
+
+        print("Raw JSON response: \(jsonString)")
+
+        let decoder = JSONDecoder()
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX" // Supports timezones like +00:00
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        if let jsonData = jsonString.data(using: .utf8) {
+            do {
+                let gears = try decoder.decode([GearItem].self, from: jsonData)
+
+                return gears
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        } else {
+            print("Could not convert JSON string back to Data")
+        }
+        
+        return []
     }
     
     // Gets one gear item by its ID

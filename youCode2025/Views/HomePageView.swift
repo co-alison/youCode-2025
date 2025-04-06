@@ -56,12 +56,7 @@ struct HomePageView: View {
                             .font(.headline)
                             .padding(.horizontal)
                         
-                        VStack(spacing: 12) {
-                            ForEach(filteredItemsBySearch) { item in
-                                GearItemView(gearItem: item)
-                            }
-                        }
-                        .padding(.horizontal)
+                        ListView(gearItems: gearItems)
                     }
                     .padding(.top)
                 }

@@ -30,11 +30,12 @@ struct GearItem: Codable, Identifiable {
     }
     
     enum GearType: String, CaseIterable, Codable {
-        case shoes
+        case boots
         case jacket
         case pants
         case hat
         case backpack
+        case safety
     }
     
     func toJSONString() -> String? {
