@@ -29,7 +29,7 @@ struct GearItem: Codable, Identifiable {
         case longitude
     }
     
-    enum GearType: String, Codable {
+    enum GearType: String, CaseIterable, Codable {
         case shoes
         case jacket
         case pants
