@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LeaderboardView: View {
+    @Binding var selectedTab: Int
     @ObservedObject private var dbService = DBService.shared
     @State private var users: [Profile] = []
     @State private var isLoading = true
@@ -65,14 +66,16 @@ struct LeaderboardView: View {
                 }
             }
             .navigationTitle("Leaderboard")
-            .onAppear {
-                Task {
-                    do {
-                        users = try await dbService.getUsers()
-                        sortUsers()
-                        isLoading = false
-                    } catch {
-                        print("Error fetching users: \(error)")
+            .onChange(of: selectedTab) { newTab in
+                if newTab == 2 {
+                    Task {
+                        do {
+                            users = try await dbService.getUsers()
+                            sortUsers()
+                            isLoading = false
+                        } catch {
+                            print("Error fetching users: \(error)")
+                        }
                     }
                 }
             }
@@ -211,5 +214,5 @@ struct LeaderboardRowView: View {
 }
 
 #Preview {
-    LeaderboardView()
+//    LeaderboardView()
 }
