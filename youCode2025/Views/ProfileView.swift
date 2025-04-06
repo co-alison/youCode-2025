@@ -97,7 +97,7 @@ struct ProfileView: View {
 
                     // Current Pieces Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Current Pieces")
+                        Text("Current Gear")
                             .font(.title2)
                             .bold()
                             .foregroundColor(.primaryText)
