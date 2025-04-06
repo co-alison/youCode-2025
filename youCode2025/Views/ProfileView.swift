@@ -13,6 +13,7 @@ struct ProfileView: View {
 //    @State private var userGear: [UserGearItem] = []
     @State private var allGearItemsForUser: [GearItem] = []
     @State private var activeGearItemsForUser: [GearItem] = []
+    @State private var user: Profile? = nil
     @State private var isLoading = true
 
     var body: some View {
@@ -33,7 +34,7 @@ struct ProfileView: View {
                         .fill(Color.primaryText)
                         .frame(width: 120, height: 120)
 
-                    if let urlString = dbService.user?.profilePhotoURL,
+                    if let urlString = user?.profilePhotoURL,
                        let imageURL = URL(string: urlString) {
                         AsyncImage(url: imageURL) { image in
                             image
@@ -56,7 +57,7 @@ struct ProfileView: View {
                 .offset(y: -60)
                 .padding(.bottom, -60)
 
-                Text("\(dbService.user?.firstName ?? "User") \(dbService.user?.lastName.prefix(1) ?? "").")
+                Text("\(user?.firstName ?? "User") \(user?.lastName.prefix(1) ?? "").")
                     .font(.title)
                     .bold()
                     .foregroundColor(.primaryText)
@@ -64,7 +65,7 @@ struct ProfileView: View {
                 HStack {
                     Text("Vancouver, BC")
                     Spacer()
-                    if let createdDate = dbService.user?.created_at {
+                    if let createdDate = user?.created_at {
                         Text("Member since \(formattedYear(from: createdDate))")
                     } else {
                         Text("Member since 2023")
@@ -80,7 +81,7 @@ struct ProfileView: View {
                 } else {
                     // Stats section
                     HStack(spacing: 32) {
-                        StatBlock(title: "ArcPoints", value: "\(dbService.user?.points ?? 0)")
+                        StatBlock(title: "ArcPoints", value: "\(user?.points ?? 0)")
                         StatBlock(title: "Borrows", value: "\(allGearItemsForUser.count)")
                     }
                     .padding()
@@ -125,7 +126,7 @@ struct ProfileView: View {
                                                     .frame(width: 100, height: 100)
                                             }
                                         } else {
-                                            EmptyImage()
+                                            EmptyImage(width: 100, height: 100)
                                         }
                                     }
                                     
@@ -157,7 +158,7 @@ struct ProfileView: View {
                     do {
                         allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
                         activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                        _ = try await dbService.getUser(id: dbService.user!.id)
+                        user = try await dbService.getUser(id: dbService.user!.id)
                         isLoading = false
                     } catch {
                         print("Error fetching users: \(error)")
@@ -170,7 +171,7 @@ struct ProfileView: View {
                         do {
                             allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
                             activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                            _ = try await dbService.getUser(id: dbService.user!.id)
+                            user = try await dbService.getUser(id: dbService.user!.id)
                             isLoading = false
                         } catch {
                             print("Error fetching users: \(error)")

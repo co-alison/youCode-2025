@@ -32,12 +32,7 @@ struct GearItemView: View {
                                 .frame(width: 240, height: 240)
                         }
                     } else {
-                        Image("ceriumjacket") // placeholder
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 240, height: 240)
-                            .clipped()
-                            .cornerRadius(10)
+                        EmptyImage(width: 240, height: 240)
                     }
                 }
 

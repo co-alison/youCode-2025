@@ -7,12 +7,17 @@
 import SwiftUI
 
 struct ContactInfoView: View {
-    @ObservedObject private var dbService = DBService.shared
     let gearItem: GearItem
+    @ObservedObject private var dbService = DBService.shared
+    @State private var user: Profile? = nil
+    @State private var isLoading: Bool = true
     
     var body: some View {
         ScrollView {
-            if let user = dbService.user {
+            if isLoading {
+                ProgressView("Loading contact info...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
                 VStack(spacing: 20) {
                     // Top banner
                     Color.accent
@@ -27,29 +32,57 @@ struct ContactInfoView: View {
                         )
 
                     // Profile Picture
-                    Circle()
-                        .fill(Color.primaryText)
-                        .frame(width: 100, height: 100)
-                        .overlay(
-                            Image(systemName: "person.fill")
-                                .foregroundColor(.white)
-                                .font(.system(size: 40))
-                        )
-                        .offset(y: -50)
-                        .padding(.bottom, -50)
+                    ZStack {
+                        Circle()
+                            .fill(Color.primaryText)
+                            .frame(width: 100, height: 100)
 
-                    Text("\(user.firstName) \(user.lastName)")
+                        if let urlString = dbService.user?.profilePhotoURL,
+                           let imageURL = URL(string: urlString) {
+                            AsyncImage(url: imageURL) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 90, height: 90)
+                                    .clipShape(Circle())
+                            } placeholder: {
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                            }
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .offset(y: -50)
+                    .padding(.bottom, -50)
+                    
+//                    Circle()
+//                        .fill(Color.primaryText)
+//                        .frame(width: 100, height: 100)
+//                        .overlay(
+//                            Image(systemName: "person.fill")
+//                                .foregroundColor(.white)
+//                                .font(.system(size: 40))
+//                        )
+//                        .offset(y: -50)
+//                        .padding(.bottom, -50)
+
+                    Text("\(user!.firstName) \(user!.lastName)")
                         .font(.title2)
                         .bold()
                         .foregroundColor(.primaryText)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        InfoRow(label: "Email", value: user.email)
+                        InfoRow(label: "Email", value: user!.email)
                         
                         // Just include total points
-                        InfoRow(label: "Total Points", value: "\(user.points ?? 0)")
+                        InfoRow(label: "Total Points", value: "\(user!.points ?? 0)")
                         
-                        if let joinedDate = user.created_at {
+                        if let joinedDate = user!.created_at {
                             InfoRow(label: "Member since", value: formattedDate(from: joinedDate))
                         }
                     }
@@ -58,19 +91,20 @@ struct ContactInfoView: View {
                     .cornerRadius(12)
                     .padding(.horizontal)
                 }
-            } else {
-                VStack {
-                    Text("Please sign in to view your profile")
-                        .foregroundColor(.primaryText)
-                        .padding()
-                    
-                    ProgressView()
-                }
-                .frame(maxHeight: .infinity)
             }
 //            .padding(.vertical)
         }
         .background(Color.background.edgesIgnoringSafeArea(.all))
+        .onAppear {
+            Task {
+                do {
+                    user = try await dbService.getUserForGearItem(gearId: gearItem.id!)
+                    isLoading = false
+                } catch {
+                    print("Error fetching user: \(error)")
+                }
+            }
+        }
     }
 
     private func formattedDate(from date: Date) -> String {

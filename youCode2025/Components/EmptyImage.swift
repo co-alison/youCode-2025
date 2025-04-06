@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct EmptyImage: View {
+    let width: CGFloat
+    let height: CGFloat
+    
     var body: some View {
         Rectangle()
             .fill(Color.accent)
-            .frame(width: 100, height: 100)
+            .frame(width: width, height: height)
             .cornerRadius(8)
     }
 }

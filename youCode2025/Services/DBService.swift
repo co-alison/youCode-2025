@@ -213,9 +213,9 @@ class DBService: ObservableObject {
             let res = try decoder.decode(Profile.self, from: jsonData)
             print("Decoded Profile:", res)
 
-            await MainActor.run {
-                self.user = res
-            }
+//            await MainActor.run {
+//                self.user = res
+//            }
 
             return res
         } catch {
@@ -248,6 +248,7 @@ class DBService: ObservableObject {
         let data = try await client
             .from("Gear")
             .select()
+            .eq("is_available", value: true)
             .execute()
             .data
         
@@ -617,6 +618,50 @@ class DBService: ObservableObject {
             .select("user_id")
             .eq("gear_id", value: gearId)
             .eq("is_active", value: true)
+            .single()
+            .execute()
+            .data
+
+        guard let userJsonString = String(data: userGearData, encoding: .utf8),
+              let userJsonData = userJsonString.data(using: .utf8) else {
+            throw NSError(domain: "getUserForGearItem", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert userId data"])
+        }
+
+        struct UserIdWrapper: Codable {
+            let user_id: UUID
+        }
+
+        let userIdWrapper = try JSONDecoder().decode(UserIdWrapper.self, from: userJsonData)
+
+        let userData = try await client
+            .from("Profiles")
+            .select()
+            .eq("id", value: userIdWrapper.user_id.uuidString)
+            .single()
+            .execute()
+            .data
+
+        guard let userProfileJson = String(data: userData, encoding: .utf8),
+              let userProfileData = userProfileJson.data(using: .utf8) else {
+            throw NSError(domain: "getUserForGearItem", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert profile data"])
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+        let profile = try decoder.decode(Profile.self, from: userProfileData)
+        
+        
+        return profile
+    }
+    
+    func getLastUserForGearItem(gearId: Int) async throws -> Profile? {
+        let userGearData = try await client
+            .from("UserGears")
+            .select("user_id")
+            .eq("gear_id", value: gearId)
+            .eq("is_active", value: false)
+            .order("user_id", ascending: false)
+            .limit(1)
             .single()
             .execute()
             .data
