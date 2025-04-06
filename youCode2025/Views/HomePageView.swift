@@ -120,7 +120,7 @@ struct CategoryView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(gearTypes, id: \.self) { gearType in
-                        NavigationLink(destination: GearsView(gearItems: filterItemsByType(for: gearType))) {
+                        NavigationLink(destination: GearsView(gearItems: filterItemsByType(for: gearType), gearType: gearType)) {
                             CategoryCard(title: gearType.rawValue.capitalized, imageName: gearType.rawValue)
                         }
                     }
