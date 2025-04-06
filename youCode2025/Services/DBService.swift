@@ -10,6 +10,8 @@ import Supabase
 import Combine
 import Foundation
 
+
+
 class DBService: ObservableObject {
     static let shared = DBService()
     
@@ -214,7 +216,7 @@ class DBService: ObservableObject {
     
     // Creates a new gear item
     func createGear(name: String, type: GearItem.GearType, description: String,
-                    currentCondition: String, latitude: Double, longitude: Double, isAvailable: Bool) async throws -> GearItem {
+                    currentCondition: GearItem.GearCondition, latitude: Double, longitude: Double, isAvailable: Bool) async throws -> GearItem {
 
         let newGear = GearItem(
             id: nil,
@@ -342,6 +344,7 @@ class DBService: ObservableObject {
 
     
     func disassociateGearFromUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
+
         let update = UserGearLink(userId: userId, gearId: gearId, isActive: false)
 
         let data = try await client
@@ -356,6 +359,7 @@ class DBService: ObservableObject {
 
         guard let jsonString = String(data: data, encoding: .utf8) else {
             throw NSError(domain: "disassociateGearFromUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+
         }
 
         print("Raw JSON response: \(jsonString)")

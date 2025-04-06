@@ -1,55 +1,70 @@
-////
-////  AddGearView.swift
-////  youCode2025
-////
-////  Created by Alison Co on 2025-04-05.
-////
 //
-//import SwiftUI
+//  AddGearView.swift
+//  youCode2025
 //
-//struct AddGearView: View {
-//    @StateObject private var nfcService = NFCService()
-//    @ObservedObject private var dbService = DBService.shared
-//    var gear_id: Int?
-//    @State private var isPerformingTask = false
+//  Created by Alison Co on 2025-04-05.
 //
-//    var body: some View {
-//        VStack {
-//            if (nfcService.scannedText.isEmpty) {
-//                Button("Scan Tag to Borrow Item") {
-//                    nfcService.startReading()
-//                }
-//            } else {
-//                Button(
-//                    action: {
-//                    isPerformingTask = true
-//                    Task {
-//                        try await dbService.associateGearWithUser(userId: dbService.user!.id, gearId: Int(nfcService.scannedText)!)
-//                        try await dbService.updateGear(id: Int(nfcService.scannedText)!, updates: ["is_borrowed": true])
-//                        isPerformingTask = false
-//                    }
-//                    print(nfcService.scannedText)
-//                    
-//                },
-//                    label: {
-//                        if isPerformingTask {
-//                            ProgressView()
-//                        } else {
-//                            Text("Confirm Borrow")
-//                        }
-//                    }
-//                )
-//                .disabled(isPerformingTask)
-//                
-//                Button("Cancel Borrow") {
-//                    print("Cancelled")
-//                }
-//            }
-//        }
-//        
-//    }
-//}
-//
-//#Preview {
-//    BorrowView()
-//}
+
+import SwiftUI
+
+struct AddGearView: View {
+    @StateObject private var nfcService = NFCService()
+    @ObservedObject private var dbService = DBService.shared
+    var gear_id: Int?
+    @State private var isPerformingTask = false
+    
+    @State private var name: String
+    @State private var createdAt: Date?
+    @State private var type: GearItem.GearType
+    @State private var description: String
+    @State private var currentCondition: GearItem.GearCondition
+    @State private var latitude: Double
+    @State private var longitude: Double
+    @State private var isAvailable: Bool
+
+    var body: some View {
+        VStack {
+            TextField("Gear Name: ex. Blundstone boots", text: $name)
+            TextField("Gear Description: ex. Size 4.5, Black", text: $description)
+            Picker("Gear Type", selection: $type) {
+                ForEach(GearItem.GearType.allCases, id: \.self) { gearType in
+                    Text(gearType.rawValue.capitalized)
+                }
+            }
+//            .pickerStyle(.menu)
+            Picker("Gear Condition", selection: $currentCondition) {
+                ForEach(GearItem.GearCondition.allCases, id: \.self) { gearCondition in
+                    Text(gearCondition.rawValue.capitalized)
+                }
+            }
+            
+            Button(
+                action: {
+                isPerformingTask = true
+                Task {
+                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: true)
+                    guard let id = result.id else {
+                        print("Error finding newly-added Gear ID")
+                        return
+                    }
+                    nfcService.startWriting(with: String(id))
+                    print("Added Gear \(String(id))")
+                    isPerformingTask = false
+                }
+            },
+                label: {
+                    if isPerformingTask {
+                        ProgressView()
+                    } else {
+                        Text("Scan Tag to Add Gear")
+                    }
+                }
+            )
+            .disabled(isPerformingTask)
+        }
+    }
+}
+
+#Preview {
+    BorrowView()
+}
