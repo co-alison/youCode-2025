@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AddGearView: View {
     @StateObject private var nfcService = NFCService()
@@ -21,9 +22,32 @@ struct AddGearView: View {
     @State private var latitude: Double = 0.0
     @State private var longitude: Double = 0.0
     @State private var isAvailable = true
+    @State private var selectedImage: PhotosPickerItem?
+    @State private var gearUIImage: UIImage?
 
     var body: some View {
         VStack {
+            if let gearUIImage = gearUIImage {
+                Image(uiImage: gearUIImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 300, height: 300)
+                    .cornerRadius(10)
+                    .padding()
+            }
+            
+            PhotosPicker("Select Gear Photo", selection:
+                $selectedImage, matching: .images)
+                .padding()
+                .onChange(of: selectedImage) { newItem in
+                    Task {
+                        if let data = try? await newItem?.loadTransferable(type: Data.self),
+                           let image = UIImage(data: data) {
+                            gearUIImage = image
+                        }
+                    }
+                }
+            
             TextField("Gear Name: ex. Blundstone boots", text: $name)
             TextField("Gear Description: ex. Size 4.5, Black", text: $description)
             Picker("Gear Type", selection: $type) {
@@ -42,7 +66,11 @@ struct AddGearView: View {
                 action: {
                 isPerformingTask = true
                 Task {
+<<<<<<< Updated upstream
                     let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: isAvailable)
+=======
+                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: true, gearUIImage: gearUIImage)
+>>>>>>> Stashed changes
                     guard let id = result.id else {
                         print("Error finding newly-added Gear ID")
                         return

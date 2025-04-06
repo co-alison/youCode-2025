@@ -17,6 +17,7 @@ struct Profile: Codable {
     let distanceHiked: Int? = 0
     let elevationGained: Int? = 0
     let created_at: Date? = Date()
+    let profilePhotoURL: String?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -27,6 +28,7 @@ struct Profile: Codable {
         case distanceHiked = "distance_hiked"
         case elevationGained = "elevation_gained"
         case created_at = "created_at"
+        case profilePhotoURL = "profile_photo_url"
     }
     
     

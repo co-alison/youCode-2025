@@ -27,17 +27,33 @@ struct ProfileView: View {
                         .padding()
                 }
 
-                // Profile circle
-                Circle()
-                    .fill(Color.primaryText)
-                    .frame(width: 200, height: 200)
-                    .overlay(
-                        Image(systemName: "person.fill")
+                ZStack {
+                    Circle()
+                        .fill(Color.primaryText)
+                        .frame(width: 120, height: 120)
+
+                    if let urlString = dbService.user?.profilePhotoURL,
+                       let imageURL = URL(string: urlString) {
+                        AsyncImage(url: imageURL) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(Circle())
+                        } placeholder: {
+                            ProgressView()
+                                .frame(width: 120, height: 120)
+                        }
+                    } else {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
                             .foregroundColor(.white)
-                            .font(.system(size: 40))
-                    )
-                    .offset(y: -60)
-                    .padding(.bottom, -60)
+                    }
+                }
+                .offset(y: -60)
+                .padding(.bottom, -60)
 
                 Text("\(dbService.user?.firstName ?? "User") \(dbService.user?.lastName.prefix(1) ?? "").")
                     .font(.title)
