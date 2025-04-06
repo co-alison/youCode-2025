@@ -68,13 +68,13 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                         }
                         tag.writeNDEF(message) { error in
                             if let error = error {
-                                session.invalidate(errorMessage: "Write failed: \(error.localizedDescription)")
+                                session.invalidate(errorMessage: "Failed to add gear: \(error.localizedDescription)")
                             } else {
-                                session.alertMessage = "Write successful!"
+                                session.alertMessage = "Gear Added!!"
                                 print(message)
                                 session.invalidate()
                                 DispatchQueue.main.async {
-                                    self.statusMessage = "Write completed!"
+                                    self.statusMessage = "Gear Added!"
                                 }
                             }
                         }
@@ -105,7 +105,8 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                             DispatchQueue.main.async {
                                 self.scannedText = text
                                 print("Scanned text: \(self.scannedText)")
-                                self.statusMessage = "Read successful!"
+                                session.alertMessage = "Tag scanned!"
+                                self.statusMessage = "Tag scanned!"
                             }
                         }
 

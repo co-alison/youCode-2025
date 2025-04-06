@@ -20,10 +20,6 @@ struct ReturnView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("SCAN TAG TO RETURN ITEM")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
                 if nfcService.scannedText.isEmpty {
                     Button(action: {
                         nfcService.startReading()

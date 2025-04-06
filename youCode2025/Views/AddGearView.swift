@@ -14,6 +14,7 @@ struct AddGearView: View {
     @StateObject private var locationManager = LocationService()
     @ObservedObject private var dbService = DBService.shared
     
+    
     var gear_id: Int?
     
     @State private var isPerformingTask = false
@@ -27,6 +28,8 @@ struct AddGearView: View {
     @State private var isAvailable = true
     @State private var selectedImage: PhotosPickerItem?
     @State private var gearUIImage: UIImage?
+    
+//    @State private var showingAlert = false
 
     var body: some View {
         ScrollView {
@@ -75,7 +78,7 @@ struct AddGearView: View {
                     TextField("Item Name", text: $name)
                         .textFieldStyle(.roundedBorder)
 
-                    TextField("Color Name", text: $description)
+                    TextField("Item Description", text: $description)
                         .textFieldStyle(.roundedBorder)
 
                     Picker("Category", selection: $type) {
@@ -134,6 +137,7 @@ struct AddGearView: View {
                         nfcService.startWriting(with: String(id))
                         print("Added Gear \(id)")
                         isPerformingTask = false
+//                        showingAlert = true
 //                        dismiss()
                     }
                 }) {
@@ -154,6 +158,9 @@ struct AddGearView: View {
             }
             .padding()
         }
+//        .alert("Gear Added", isPresented: $showingAlert) {
+//            Button("OK", role: .cancel) { }
+//        }
         .onAppear {
             locationManager.requestLocationPermission()
             locationManager.startUpdatingLocation()
