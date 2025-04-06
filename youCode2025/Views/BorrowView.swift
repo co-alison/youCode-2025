@@ -7,15 +7,17 @@
 import SwiftUI
 
 struct BorrowView: View {
-//    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
     @Binding var userNeedsRefresh: Bool
+    @Binding var selectedTab: Int
 
     var gear_id: Int?
     @State private var isPerformingTask = false
     @State private var gearIsCurrentlyBorrowed = false
     @State private var name = ""
+    
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -71,6 +73,8 @@ struct BorrowView: View {
                                 userNeedsRefresh = true
                                 isPerformingTask = false
                                 nfcService.scannedText = ""
+                                dismiss()
+                                selectedTab = 3
                             } catch let error as NSError {
                                 if error.domain == "AppError" && error.code == 1001 {
                                     DispatchQueue.main.async {
@@ -107,6 +111,11 @@ struct BorrowView: View {
             }
                 
         }
+//        .onChange(of: nfcService.complete) { newValue in
+//            if newValue {
+//                selectedTab = 3
+//            }
+//        }
         .padding()
     }
 }

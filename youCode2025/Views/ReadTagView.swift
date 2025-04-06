@@ -12,13 +12,15 @@ struct ReadTagView: View {
     @StateObject var nfcService = NFCService()
     @ObservedObject private var dbService = DBService.shared
     @Binding var userNeedsRefresh: Bool
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
 
                 // Borrow Gear Button
-                NavigationLink(destination: BorrowView(userNeedsRefresh: $userNeedsRefresh).environmentObject(nfcService)) {
+
+                NavigationLink(destination: BorrowView(userNeedsRefresh: $userNeedsRefresh, selectedTab: $selectedTab).environmentObject(nfcService)) {
                     Text("Borrow Gear")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -29,7 +31,7 @@ struct ReadTagView: View {
                 .padding(.horizontal)
                 
                 // Return Gear Button
-                NavigationLink(destination: ReturnView(userNeedsRefresh: $userNeedsRefresh).environmentObject(nfcService)) {
+                NavigationLink(destination: ReturnView(userNeedsRefresh: $userNeedsRefresh, selectedTab: $selectedTab).environmentObject(nfcService)) {
                     Text("Return Gear")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -40,7 +42,7 @@ struct ReadTagView: View {
                 .padding(.horizontal)
 
                 // Add Gear Tag Button
-                NavigationLink(destination: AddGearView()) {
+                NavigationLink(destination: AddGearView(selectedTab: $selectedTab)) {
                     Text("Add Gear Tag")
                         .frame(maxWidth: .infinity)
                         .padding()

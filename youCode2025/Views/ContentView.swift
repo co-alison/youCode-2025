@@ -13,7 +13,7 @@ struct ContentView: View {
         if dbService.user != nil {
             HomePageView()
         } else {
-            AuthView()
+            WelcomeView()
         }
     }
 }
