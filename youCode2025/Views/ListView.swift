@@ -11,15 +11,13 @@ struct ListView: View {
     let gearItems: [GearItem]
     
     @State private var selectedGearItem: GearItem? = nil
-//    @State private var showGearItemView: Bool = false
     
     var body: some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(alignment: .leading) {
                 ForEach(gearItems) { gearItem in
                     Button {
                         selectedGearItem = gearItem
-//                        showGearItemView = true
                     } label: {
                         HStack {
                             ZStack {
@@ -29,19 +27,15 @@ struct ListView: View {
                                         image
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: 240, height: 240)
+                                            .frame(width: 100, height: 100)
                                             .clipped()
                                             .cornerRadius(10)
                                     } placeholder: {
                                         ProgressView()
-                                            .frame(width: 240, height: 240)
+                                            .frame(width: 100, height: 100)
                                     }
                                 } else {
-                                    Image(systemName: "gear")
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .clipped()
-                                        .cornerRadius(10)
+                                    EmptyImage()
                                 }
                             }
                             Text(gearItem.name)

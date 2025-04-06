@@ -110,11 +110,25 @@ struct ProfileView: View {
                     } else {
                         ForEach(activeGearItemsForUser) { item in
                             HStack {
-                                Rectangle()
-                                    .fill(Color.accent)
-                                    .frame(width: 60, height: 60)
-                                    .cornerRadius(8)
-
+                                ZStack {
+                                    if let urlString = item.gearPhotoURL,
+                                       let imageURL = URL(string: urlString) {
+                                        AsyncImage(url: imageURL) { image in
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 100, height: 100)
+                                                .clipped()
+                                                .cornerRadius(10)
+                                        } placeholder: {
+                                            ProgressView()
+                                                .frame(width: 100, height: 100)
+                                        }
+                                    } else {
+                                        EmptyImage()
+                                    }
+                                }
+                                
                                 VStack(alignment: .leading) {
                                     Text(item.name)
                                         .font(.headline)
