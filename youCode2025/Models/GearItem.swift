@@ -14,7 +14,7 @@ struct GearItem: Codable, Identifiable {
     let name: String
     let type: GearType
     let description: String
-    let currentCondition: String
+    let currentCondition: GearCondition
     let latitude: Double
     let longitude: Double
     let isAvailable: Bool
@@ -38,6 +38,13 @@ struct GearItem: Codable, Identifiable {
         case hat
         case backpack
         case safety
+    }
+    
+    enum GearCondition: String, CaseIterable, Codable {
+        case poor
+        case fair
+        case good
+        case excellent
     }
     
     func toJSONString() -> String? {
