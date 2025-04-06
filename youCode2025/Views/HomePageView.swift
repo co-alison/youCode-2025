@@ -75,14 +75,14 @@ struct HomePageView: View {
                 }
                 .tag(1)
 
-            LeaderboardView()
+            LeaderboardView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: "list.number")
                     Text("Leaderboard")
                 }
                 .tag(2)
 
-            ProfileView()
+            ProfileView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("Profile")
@@ -90,12 +90,14 @@ struct HomePageView: View {
                 .tag(3)
         }
         .accentColor(.blue)
-        .onAppear {
-            Task {
-                do {
-                    gearItems = try await dbService.getAllGear()
-                } catch {
-                    print("Error fetching gear items: \(error)")
+        .onChange(of: selectedTab) { newTab in
+            if newTab == 0 {
+                Task {
+                    do {
+                        gearItems = try await dbService.getAllGear()
+                    } catch {
+                        print("Error fetching gear items: \(error)")
+                    }
                 }
             }
         }

@@ -301,7 +301,6 @@ class DBService: ObservableObject {
         gearUIImage: UIImage?
     ) async throws -> GearItem {
 
-        // Step 1: Insert gear WITHOUT imageURL
         var newGear = GearItem(
             id: nil,
 //            createdAt: nil,
@@ -333,13 +332,11 @@ class DBService: ObservableObject {
 
         var insertedGear = try decoder.decode(GearItem.self, from: insertedJsonData)
 
-        // Step 2: Upload image if provided
         if let gearUIImage = gearUIImage,
            let imageData = gearUIImage.jpegData(compressionQuality: 0.8),
            let gearId = insertedGear.id {
             let imageURL = try await uploadGearImage(gearId: gearId, imageData: imageData)
 
-            // Step 3: Update gear with imageURL
             struct UpdatePayload: Codable {
                 let gearPhotoURL: String
                 

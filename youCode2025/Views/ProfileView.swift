@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @Binding var selectedTab: Int
     @ObservedObject private var dbService = DBService.shared
 //    @State private var userGear: [UserGearItem] = []
     @State private var allGearItemsForUser: [GearItem] = []
@@ -136,14 +137,16 @@ struct ProfileView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
-            .onAppear {
-                Task {
-                    do {
-                        allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
-                        activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                        isLoading = false
-                    } catch {
-                        print("Error fetching users: \(error)")
+            .onChange(of: selectedTab) { newTab in
+                if newTab == 3 {
+                    Task {
+                        do {
+                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                            isLoading = false
+                        } catch {
+                            print("Error fetching users: \(error)")
+                        }
                     }
                 }
             }
@@ -211,7 +214,7 @@ struct StatLabel: View {
 }
 
 #Preview {
-    ProfileView()
+//    ProfileView()
 }
 
 extension Color {

@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "1B16B102-E12F-4C0A-9639-B75A25A62F8D"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "78122E32-3B5C-4F5C-8842-F3A9F585D5E9"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "78122E32-3B5C-4F5C-8842-F3A9F585D5E9 - edf6a1a5db166e0d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "82"
+                  endingLineNumber = "82">
+               </Location>
+               <Location
+                  uuid = "78122E32-3B5C-4F5C-8842-F3A9F585D5E9 - 784e2284d785376c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "82"
+                  endingLineNumber = "82">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6A39FADF-DB52-4F36-8585-A2C39E0BEEEF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6A39FADF-DB52-4F36-8585-A2C39E0BEEEF - edf6a1a5db166e0d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "82"
+                  endingLineNumber = "82">
+               </Location>
+               <Location
+                  uuid = "6A39FADF-DB52-4F36-8585-A2C39E0BEEEF - 784e2284d785376c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "82"
+                  endingLineNumber = "82">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4FBE822A-9778-4BCF-89A0-43B06BE6E5CC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "432D7D22-63D7-4473-90BF-ED0549181BF6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "426C1268-E38D-4EBB-B657-EB4302276F0C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2CDAADCD-85B1-46F7-9661-EC0358713C11"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "449C61A3-7DEE-4A62-B69A-6BF4340455CF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
+            landmarkName = "signUp(email:password:firstName:lastName:profileUIImage:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "449C61A3-7DEE-4A62-B69A-6BF4340455CF - da6bb5749ed40c17"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "98"
+                  endingLineNumber = "98">
+               </Location>
+               <Location
+                  uuid = "449C61A3-7DEE-4A62-B69A-6BF4340455CF - 109c98c3518bd801"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for youCode2025.DBService.signUp(email: Swift.String, password: Swift.String, firstName: Swift.String, lastName: Swift.String, profileUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; ()"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "98"
+                  endingLineNumber = "98">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7E82C070-F286-4E96-92D9-F46C2CD266E8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
+            landmarkName = "getGear(id:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C95CA7DC-7E3B-4AB5-899C-A61C6D387D6B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "getGear(id:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C95CA7DC-7E3B-4AB5-899C-A61C6D387D6B - add95d1d54dfcdc2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for youCode2025.DBService.getGear(id: Swift.Int) async throws -&gt; youCode2025.GearItem"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "290"
+                  endingLineNumber = "290">
+               </Location>
+               <Location
+                  uuid = "C95CA7DC-7E3B-4AB5-899C-A61C6D387D6B - 745bf8cf03c36bc5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for youCode2025.DBService.getGear(id: Swift.Int) async throws -&gt; youCode2025.GearItem"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "290"
+                  endingLineNumber = "290">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4B01C0BE-C5D8-47E3-8937-D74FFB3830E7"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2D415DCD-9458-4B9E-BD0F-9E091C522F7A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "81E02789-0237-4654-A69E-B84A2D2A88AD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "311"
+            endingLineNumber = "311"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "08BD0ED0-DAD0-435A-B2EE-8F12F125779C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "313"
+            endingLineNumber = "313"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "48EFF160-1782-4046-AFEC-6329CE17D221"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "327"
+            endingLineNumber = "327"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "48EFF160-1782-4046-AFEC-6329CE17D221 - e790e3b961ba6466"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for youCode2025.DBService.createGear(name: Swift.String, type: youCode2025.GearItem.GearType, description: Swift.String, currentCondition: youCode2025.GearItem.GearCondition, latitude: Swift.Double, longitude: Swift.Double, isAvailable: Swift.Bool, gearUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; youCode2025.GearItem"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "328"
+                  endingLineNumber = "328">
+               </Location>
+               <Location
+                  uuid = "48EFF160-1782-4046-AFEC-6329CE17D221 - 8644dda201888c62"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for youCode2025.DBService.createGear(name: Swift.String, type: youCode2025.GearItem.GearType, description: Swift.String, currentCondition: youCode2025.GearItem.GearCondition, latitude: Swift.Double, longitude: Swift.Double, isAvailable: Swift.Bool, gearUIImage: Swift.Optional&lt;__C.UIImage&gt;) async throws -&gt; youCode2025.GearItem"
+                  moduleName = "youCode2025.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alisonco/Documents/youCode-2025/youCode2025/Services/DBService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "328"
+                  endingLineNumber = "328">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "68C46640-DDE3-443B-9A6D-BE20912ADCD7"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "youCode2025/Services/DBService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "330"
+            endingLineNumber = "330"
+            landmarkName = "createGear(name:type:description:currentCondition:latitude:longitude:isAvailable:gearUIImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
