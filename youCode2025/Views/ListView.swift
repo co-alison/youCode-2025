@@ -37,19 +37,13 @@ struct ListView: View {
                                             .frame(width: 240, height: 240)
                                     }
                                 } else {
-                                    Image("ceriumjacket") // placeholder
+                                    Image(systemName: "gear")
                                         .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 240, height: 240)
+                                        .frame(width: 50, height: 50)
                                         .clipped()
                                         .cornerRadius(10)
                                 }
                             }
-                            Image(systemName: "gear")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .clipped()
-                                .cornerRadius(10)
                             Text(gearItem.name)
                                 .font(.headline)
                                 .foregroundColor(.primary)

@@ -8,8 +8,6 @@ import SwiftUI
 
 struct BorrowView: View {
     @EnvironmentObject var nfcService: NFCService
-//    @StateObject private var nfcService = NFCService()
-//    @StateObject private var scannedText
     @ObservedObject private var dbService = DBService.shared
     var gear_id: Int?
     @State private var isPerformingTask = false

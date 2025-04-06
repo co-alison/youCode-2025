@@ -10,7 +10,9 @@ import PhotosUI
 
 struct AddGearView: View {
     @StateObject private var nfcService = NFCService()
+    @StateObject private var locationManager = LocationService()
     @ObservedObject private var dbService = DBService.shared
+    
     var gear_id: Int?
     @State private var isPerformingTask = false
     
@@ -66,7 +68,7 @@ struct AddGearView: View {
                 action: {
                 isPerformingTask = true
                 Task {
-                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: isAvailable, gearUIImage: gearUIImage)
+                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: locationManager.latitude, longitude: locationManager.longitude, isAvailable: isAvailable, gearUIImage: gearUIImage)
                     guard let id = result.id else {
                         print("Error finding newly-added Gear ID")
                         return
@@ -85,6 +87,10 @@ struct AddGearView: View {
                 }
             )
             .disabled(isPerformingTask)
+        }
+        .onAppear {
+            locationManager.requestLocationPermission()
+            locationManager.startUpdatingLocation()
         }
     }
 }

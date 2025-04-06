@@ -6,18 +6,19 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct GearsView: View {
+    @StateObject private var locationManager = LocationService()
     @State private var showingMap = false
     var gearItems: [GearItem]
     var gearType: String
     
-//    let gearItems: [GearItem] = [GearItem(id: 123, gearType: GearType.boots, latitude: 49.28332506862739, longitude: -123.13560646901378, name: "Atom Hoodie", description: "jacket")] // TODO
     var body: some View {
         NavigationStack {
             Group {
                 if showingMap {
-                    MapView(gearItems: gearItems)
+                    MapView(gearItems: gearItems, region: MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: locationManager.latitude, longitude: locationManager.longitude), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)) )
                 } else {
                     ListView(gearItems: gearItems)
                 }
@@ -32,6 +33,10 @@ struct GearsView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            locationManager.requestLocationPermission()
+            locationManager.startUpdatingLocation()
         }
     }
 }
