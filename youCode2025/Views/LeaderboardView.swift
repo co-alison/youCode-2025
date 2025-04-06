@@ -12,31 +12,10 @@ struct LeaderboardView: View {
     @State private var users: [Profile] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
-    @State private var sortOption = SortOption.points
-    
-    enum SortOption: String, CaseIterable, Identifiable {
-        case points = "Points"
-        case distance = "Distance"
-        case elevation = "Elevation"
-        
-        var id: String { self.rawValue }
-    }
-    
+
     var body: some View {
         NavigationView {
             VStack {
-                // Sorting options
-                Picker("Sort By", selection: $sortOption) {
-                    ForEach(SortOption.allCases) { option in
-                        Text(option.rawValue).tag(option)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
-                .onChange(of: sortOption) { _ in
-                    sortUsers()
-                }
-                
                 if isLoading {
                     ProgressView("Loading leaderboard...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -68,18 +47,13 @@ struct LeaderboardView: View {
                     .padding()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    // Current user highlight
-                    if let currentUser = dbService.user {
-                        currentUserRankView(for: currentUser)
-                    }
-                    
-                    // List of users
+                    TopThreeView(users: Array(users.prefix(3)))
+
                     List {
-                        ForEach(Array(users.enumerated()), id: \.element.id) { index, user in
+                        ForEach(Array(users.dropFirst(3).enumerated()), id: \.element.id) { index, user in
                             LeaderboardRowView(
-                                rank: index + 1,
+                                rank: index + 4,
                                 user: user,
-                                sortOption: sortOption,
                                 isCurrentUser: user.id == dbService.user?.id
                             )
                         }
@@ -95,6 +69,7 @@ struct LeaderboardView: View {
                 Task {
                     do {
                         users = try await dbService.getUsers()
+                        sortUsers()
                         isLoading = false
                     } catch {
                         print("Error fetching users: \(error)")
@@ -103,15 +78,15 @@ struct LeaderboardView: View {
             }
         }
     }
-    
+
     private func loadUsers() {
         isLoading = true
         errorMessage = nil
-        
+
         Task {
             do {
                 let fetchedUsers = try await dbService.getUsers()
-                
+
                 await MainActor.run {
                     self.users = fetchedUsers
                     sortUsers()
@@ -125,11 +100,11 @@ struct LeaderboardView: View {
             }
         }
     }
-    
+
     private func refreshData() async {
         do {
             let fetchedUsers = try await dbService.getUsers()
-            
+
             await MainActor.run {
                 self.users = fetchedUsers
                 sortUsers()
@@ -140,113 +115,97 @@ struct LeaderboardView: View {
             }
         }
     }
-    
+
     private func sortUsers() {
-        switch sortOption {
-        case .points:
-            users.sort { ($0.points ?? 0) > ($1.points ?? 0) }
-        case .distance:
-            users.sort { ($0.distanceHiked ?? 0) > ($1.distanceHiked ?? 0) }
-        case .elevation:
-            users.sort { ($0.elevationGained ?? 0) > ($1.elevationGained ?? 0) }
-        }
+        users.sort { ($0.points ?? 0) > ($1.points ?? 0) }
     }
-    
-    @ViewBuilder
-    private func currentUserRankView(for user: Profile) -> some View {
-        if let userIndex = users.firstIndex(where: { $0.id == user.id }) {
-            let rank = userIndex + 1
-            
-            HStack(spacing: 20) {
-                VStack(alignment: .center) {
-                    Text("#\(rank)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                    Text("Your Rank")
-                        .font(.caption)
-                }
-                
-                Divider()
-                    .frame(height: 50)
-                
-                VStack(alignment: .leading) {
-                    Text("\(user.firstName) \(user.lastName)")
-                        .font(.headline)
-                    
-                    switch sortOption {
-                    case .points:
-                        Text("\(user.points ?? 0) points")
-                    case .distance:
-                        Text("\(user.distanceHiked ?? 0) km hiked")
-                    case .elevation:
-                        Text("\(user.elevationGained ?? 0) m elevation")
-                    }
-                }
-                
-                Spacer()
+}
+
+struct TopThreeView: View {
+    let users: [Profile]
+
+    var body: some View {
+        HStack(spacing: 20) {
+            if users.count > 1 {
+                TopUserView(user: users[1], rank: 2, size: 80)
             }
-            .padding()
-            .background(Color.blue.opacity(0.1))
-            .cornerRadius(12)
-            .padding(.horizontal)
-        } else {
-            Text("You're not on the leaderboard yet")
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
-                .padding(.horizontal)
+
+            if users.count > 0 {
+                TopUserView(user: users[0], rank: 1, size: 100, showCrown: true)
+            }
+
+            if users.count > 2 {
+                TopUserView(user: users[2], rank: 3, size: 80)
+            }
         }
+        .padding()
+    }
+}
+
+struct TopUserView: View {
+    let user: Profile
+    let rank: Int
+    let size: CGFloat
+    var showCrown: Bool = false
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack(alignment: .top) {
+                Circle()
+                    .fill(Color.gray)
+                    .frame(width: size, height: size)
+
+                if showCrown {
+                    Image("winner")
+                        .resizable()
+                        .frame(width: 60, height: 60) // doubled size
+                        .offset(y: -30) // adjusted offset
+                }
+
+                Text("\(rank)")
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(6)
+                    .background(Color.black)
+                    .clipShape(Circle())
+                    .offset(y: size / 2 - 10)
+            }
+
+            Text("\(user.firstName) \(user.lastName.prefix(1)).")
+                .fontWeight(.medium)
+
+            Text("\(user.points ?? 0) points")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
 struct LeaderboardRowView: View {
     let rank: Int
     let user: Profile
-    let sortOption: LeaderboardView.SortOption
     let isCurrentUser: Bool
-    
+
     var body: some View {
         HStack {
-            // Rank
-            Text("#\(rank)")
-                .font(.headline)
-                .frame(width: 40)
-            
-            // User
-            HStack {
-                Circle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 40, height: 40)
-                
-                VStack(alignment: .leading) {
-                    Text("\(user.firstName) \(user.lastName)")
-                        .font(.system(size: 16, weight: .medium))
-                    
-                    Text(user.email)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-            }
-            
+            Text("\(rank)")
+                .font(.title3)
+                .bold()
+
+            Circle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(width: 32, height: 32)
+
+            Text("\(user.firstName) \(user.lastName)")
+                .font(.body)
+
             Spacer()
-            
-            // Value based on sort option
-            Group {
-                switch sortOption {
-                case .points:
-                    Text("\(user.points ?? 0)")
-                        .fontWeight(.bold)
-                case .distance:
-                    Text("\(user.distanceHiked ?? 0) km")
-                        .fontWeight(.bold)
-                case .elevation:
-                    Text("\(user.elevationGained ?? 0) m")
-                        .fontWeight(.bold)
-                }
-            }
+
+            Text("\(user.points ?? 0) points")
+                .foregroundColor(.gray)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
         .background(isCurrentUser ? Color.blue.opacity(0.1) : Color.clear)
     }
 }
