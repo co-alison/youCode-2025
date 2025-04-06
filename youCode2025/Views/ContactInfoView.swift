@@ -8,6 +8,7 @@ import SwiftUI
 
 struct ContactInfoView: View {
     @ObservedObject private var dbService = DBService.shared
+    let gearItem: GearItem
     
     var body: some View {
         ScrollView {
@@ -97,5 +98,5 @@ struct InfoRow: View {
 }
 
 #Preview {
-    ContactInfoView()
+//    ContactInfoView()
 }

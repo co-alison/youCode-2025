@@ -9,8 +9,10 @@ import SwiftUI
 
 struct GearItemView: View {
     let gearItem: GearItem
+    var onReserve: (() -> Void)? = nil
     @Environment(\.dismiss) var dismiss
     @ObservedObject private var dbService = DBService.shared
+    @State private var showContactInfo = false
 
     var body: some View {
         ScrollView {
@@ -77,7 +79,7 @@ struct GearItemView: View {
 
                 // Reserve Button
                 Button(action: {
-                    print("Reserved!")
+                    onReserve?()
                 }) {
                     Text("RESERVE")
                         .bold()

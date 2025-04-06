@@ -72,83 +72,84 @@ struct ProfileView: View {
                 }
                 .foregroundColor(.primaryText)
                 .padding(.horizontal)
+                
+                if isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding()
+                } else {
+                    // Stats section
+                    HStack(spacing: 32) {
+                        StatBlock(title: "ArcPoints", value: "\(dbService.user?.points ?? 0)")
+                        StatBlock(title: "Borrows", value: "\(allGearItemsForUser.count)")
+                    }
+                    .padding()
+                    .background(Color.cardBackground)
+                    .cornerRadius(10)
 
-                // Stats section
-                HStack(spacing: 32) {
-                    StatBlock(title: "ArcPoints", value: "\(dbService.user?.points ?? 0)")
-                    StatBlock(title: "Level", value: "GOLD")
-                    StatBlock(title: "Impact", value: "30km")
-                }
-                .padding()
-                .background(Color.cardBackground)
-                .cornerRadius(10)
+    //                HStack {
+    ////                    StatLabel(title: "Donations: ")
+    //                    Spacer()
+    //                    StatLabel(title: "Borrows: \(allGearItemsForUser.count)")
+    //                }
+    //                .padding(.horizontal)
 
-                HStack {
-                    StatLabel(title: "donations:")
-                    Spacer()
-                    StatLabel(title: "borrows: \(allGearItemsForUser.count)")
-                }
-                .padding(.horizontal)
+                    // Current Pieces Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Current Pieces")
+                            .font(.title2)
+                            .bold()
+                            .foregroundColor(.primaryText)
 
-                // Current Pieces Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Current Pieces")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.primaryText)
-
-                    if isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding()
-                    } else if allGearItemsForUser.isEmpty {
-                        Text("No gear items found")
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding()
-                            .background(Color.cardBackground)
-                            .cornerRadius(10)
-                    } else {
-                        ForEach(activeGearItemsForUser) { item in
-                            HStack {
-                                ZStack {
-                                    if let urlString = item.gearPhotoURL,
-                                       let imageURL = URL(string: urlString) {
-                                        AsyncImage(url: imageURL) { image in
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 100, height: 100)
-                                                .clipped()
-                                                .cornerRadius(10)
-                                        } placeholder: {
-                                            ProgressView()
-                                                .frame(width: 100, height: 100)
+                        if allGearItemsForUser.isEmpty {
+                            Text("No gear items found")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding()
+                                .background(Color.cardBackground)
+                                .cornerRadius(10)
+                        } else {
+                            ForEach(activeGearItemsForUser) { item in
+                                HStack {
+                                    ZStack {
+                                        if let urlString = item.gearPhotoURL,
+                                           let imageURL = URL(string: urlString) {
+                                            AsyncImage(url: imageURL) { image in
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 100, height: 100)
+                                                    .clipped()
+                                                    .cornerRadius(10)
+                                            } placeholder: {
+                                                ProgressView()
+                                                    .frame(width: 100, height: 100)
+                                            }
+                                        } else {
+                                            EmptyImage()
                                         }
-                                    } else {
-                                        EmptyImage()
                                     }
-                                }
-                                
-                                VStack(alignment: .leading) {
-                                    Text(item.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primaryText)
-                                    Text("Condition: \(item.currentCondition)")
-                                        .font(.subheadline)
-                                        .foregroundColor(.primaryText.opacity(0.8))
                                     
+                                    VStack(alignment: .leading) {
+                                        Text(item.name)
+                                            .font(.headline)
+                                            .foregroundColor(.primaryText)
+                                        Text("Condition: \(item.currentCondition)")
+                                            .font(.subheadline)
+                                            .foregroundColor(.primaryText.opacity(0.8))
+                                        
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.leading, 8)
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.leading, 8)
+                                .padding(.horizontal)
+                                .padding(.vertical, 6)
+                                .background(Color.cardBackground)
+                                .cornerRadius(10)
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 6)
-                            .background(Color.cardBackground)
-                            .cornerRadius(10)
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
             .padding(.vertical)
             .onChange(of: selectedTab) { newTab in
@@ -157,6 +158,7 @@ struct ProfileView: View {
                         do {
                             allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
                             activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                            _ = try await dbService.getUser(id: dbService.user!.id)
                             isLoading = false
                         } catch {
                             print("Error fetching users: \(error)")

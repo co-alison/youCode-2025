@@ -188,11 +188,41 @@ class DBService: ObservableObject {
     }
     
     // Gets one user by their ID
-//    func getUser(id: UUID) async throws -> Profile {
-//        return try await sendRequest(endpoint: "Profile", method: "GET", queryItems: [
-//            URLQueryItem(name: "id", value: "eq.\(id.uuidString)")
-//        ]).first!
-//    }
+    func getUser(id: UUID) async throws -> Profile {
+        do {
+            let response = try await client
+                .from("Profiles")
+                .select()
+                .eq("id", value: id)
+                .single()
+                .execute()
+            
+            guard let jsonString = String(data: response.data, encoding: .utf8) else {
+                throw NSError(domain: "getUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert data to string"])
+            }
+
+            print("Raw JSON response - getUser: \(jsonString)")
+
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted(getFormatter())
+
+            guard let jsonData = jsonString.data(using: .utf8) else {
+                throw NSError(domain: "getUser", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+            }
+
+            let res = try decoder.decode(Profile.self, from: jsonData)
+            print("Decoded Profile:", res)
+
+            await MainActor.run {
+                self.user = res
+            }
+
+            return res
+        } catch {
+            print("❌ Error in getUser:", error)
+            throw error
+        }
+    }
     
     // Creates a new user
 //    func createUser(email: String, name: String, password: String) async throws -> Profile {
