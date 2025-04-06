@@ -14,6 +14,7 @@ struct BorrowView: View {
     var gear_id: Int?
     @State private var isPerformingTask = false
     @State private var gearIsCurrentlyBorrowed = false
+    @State private var name = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -56,9 +57,6 @@ struct BorrowView: View {
                 }
             } else {
                 VStack(spacing: 16) {
-                    Text("Scanned Item ID: \(nfcService.scannedText)")// TODO: update display
-                        .font(.subheadline)
-
                     Button(action: {
                         isPerformingTask = true
                         Task {
@@ -68,6 +66,7 @@ struct BorrowView: View {
 
                                 _ = try await dbService.associateGearWithUser(userId: userId, gearId: scannedId)
                                 _ = try await dbService.updateGear(id: scannedId, isAvailable: false)
+                                
                                 isPerformingTask = false
                                 nfcService.scannedText = ""
                             } catch let error as NSError {
@@ -104,6 +103,7 @@ struct BorrowView: View {
                     }
                 }
             }
+                
         }
         .padding()
     }
