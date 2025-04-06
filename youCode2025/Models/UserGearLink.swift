@@ -7,14 +7,17 @@
 import Foundation
 
 struct UserGearLink: Codable {
+    let userGearId: Int?
     let userId: UUID
     let gearId: Int
     let isActive: Bool
 
     enum CodingKeys: String, CodingKey {
+        case userGearId = "user_gear_id"
+        case isActive = "is_active"
         case userId = "user_id"
         case gearId = "gear_id"
-        case isActive = "is_active"
+       
     }
     
     func toJSONString() -> String? {

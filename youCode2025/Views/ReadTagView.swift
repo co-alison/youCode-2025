@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ReadTagView: View {
-    @StateObject private var nfcService = NFCService()
+    @StateObject var nfcService = NFCService()
     @ObservedObject private var dbService = DBService.shared
     
 //    private var status: Status
@@ -17,17 +17,17 @@ struct ReadTagView: View {
         NavigationView {
             VStack(spacing: 30) {
 
-                NavigationLink(destination: BorrowView()) {
+                NavigationLink(destination: BorrowView().environmentObject(nfcService)) {
                     Text("Borrow Gear")
                 }
 
-                NavigationLink(destination: ReturnView()) {
+                NavigationLink(destination: ReturnView().environmentObject(nfcService)) {
                     Text("Return Gear")
                 }
                 
-//                NavigationLink(destination: AddGearView()) {
-//                    Text("Add Gear Tag")
-//                }
+                NavigationLink(destination: AddGearView()) {
+                    Text("Add Gear Tag")
+                }
                                
             }
             .navigationTitle("Scan a Tag")

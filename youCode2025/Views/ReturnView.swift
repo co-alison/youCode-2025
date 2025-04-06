@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ReturnView: View {
-    @StateObject private var nfcService = NFCService()
+    @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
@@ -18,83 +18,10 @@ struct ReturnView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("REPORT CONDITION")
-                .font(.headline)
-                .padding(.top)
-            
-            HStack(spacing: 8) {
-                ConditionButton(
-                    condition: .poor,
-                    isSelected: selectedCondition == .poor,
-                    description: "Significant damage that does not affect usage.",
-                    action: { selectedCondition = .poor }
-                )
-                ConditionButton(
-                    condition: .fair,
-                    isSelected: selectedCondition == .fair,
-                    description: "Weathered, but usable.",
-                    action: { selectedCondition = .fair }
-                )
-                ConditionButton(
-                    condition: .good,
-                    isSelected: selectedCondition == .good,
-                    description: "No issues here.",
-                    action: { selectedCondition = .good }
-                )
-                ConditionButton(
-                    condition: .excellent,
-                    isSelected: selectedCondition == .excellent,
-                    description: "Practically new!",
-                    action: { selectedCondition = .excellent }
-                )
-            }
-            .padding(.horizontal)
-            
-            Divider().padding(.vertical)
-            
-            Text("UPLOAD IMAGE & LOCATION")
-                .font(.headline)
-            
-            Text("Share a picture of where you took this piece!")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom, 5)
-            
-            HStack {
-                HStack {
-                    Image(systemName: "mappin.circle.fill")
-                        .foregroundColor(.gray)
-                    
-                    TextField("Where was this photo taken?", text: $locationText)
-                        .padding(.vertical, 8)
-                }
-                .padding(.horizontal)
-                .background(Color(UIColor.systemGray5))
-                .cornerRadius(8)
-                
-                Button(action: {
-                    // Image upload logic
-                }) {
-                    Image(systemName: "arrow.up.square.fill")
-                        .font(.title)
-                        .foregroundColor(Color.yellow)
-                }
-                .padding(.horizontal, 8)
-            }
-            .padding(.horizontal)
-            
-            Text("For damage affecting usage contact")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-            Text("arc1tag_services@gmail.com")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-            
-            Spacer()
-            
             if nfcService.scannedText.isEmpty {
                 Button(action: {
                     nfcService.startReading()
+                    
                 }) {
                     Text("Scan Tag to Return Item")
                         .frame(maxWidth: .infinity)
@@ -104,8 +31,80 @@ struct ReturnView: View {
                         .cornerRadius(8)
                 }
                 .padding(.horizontal)
-                .disabled(selectedCondition == nil)
             } else {
+                Text("REPORT CONDITION")
+                    .font(.headline)
+                    .padding(.top)
+                
+                HStack(spacing: 8) {
+                    ConditionButton(
+                        condition: .poor,
+                        isSelected: selectedCondition == .poor,
+                        description: "Significant damage that does not affect usage.",
+                        action: { selectedCondition = .poor }
+                    )
+                    ConditionButton(
+                        condition: .fair,
+                        isSelected: selectedCondition == .fair,
+                        description: "Weathered, but usable.",
+                        action: { selectedCondition = .fair }
+                    )
+                    ConditionButton(
+                        condition: .good,
+                        isSelected: selectedCondition == .good,
+                        description: "No issues here.",
+                        action: { selectedCondition = .good }
+                    )
+                    ConditionButton(
+                        condition: .excellent,
+                        isSelected: selectedCondition == .excellent,
+                        description: "Practically new!",
+                        action: { selectedCondition = .excellent }
+                    )
+                }
+                .padding(.horizontal)
+                
+                Divider().padding(.vertical)
+                
+                Text("UPLOAD IMAGE & LOCATION")
+                    .font(.headline)
+                
+                Text("Share a picture of where you took this piece!")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 5)
+                
+                HStack {
+                    HStack {
+                        Image(systemName: "mappin.circle.fill")
+                            .foregroundColor(.gray)
+                        
+                        TextField("Where was this photo taken?", text: $locationText)
+                            .padding(.vertical, 8)
+                    }
+                    .padding(.horizontal)
+                    .background(Color(UIColor.systemGray5))
+                    .cornerRadius(8)
+                    
+                    Button(action: {
+                        // Image upload logic
+                    }) {
+                        Image(systemName: "arrow.up.square.fill")
+                            .font(.title)
+                            .foregroundColor(Color.yellow)
+                    }
+                    .padding(.horizontal, 8)
+                }
+                .padding(.horizontal)
+                
+                Text("For damage affecting usage contact")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                Text("arc1tag_services@gmail.com")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
                 Button(
                     action: {
                         isPerformingTask = true
@@ -118,7 +117,7 @@ struct ReturnView: View {
                             let mockLat = 51.0447
                             let mockLong = -114.0719
                             
-                            try await dbService.disassociateGearFromUser(userId: userId, gearId: gearId)
+                            try await dbService.updateGearUser(userId: userId, gearId: gearId, isActive: false)
                             try await dbService.updateGear(
                                 id: gearId,
                                 currentCondition: condition,
@@ -128,6 +127,7 @@ struct ReturnView: View {
                             )
                             
                             isPerformingTask = false
+                            nfcService.scannedText = ""
                         }
                     },
                     label: {

@@ -62,11 +62,16 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                     }
 
                     if status == .readWrite {
+                        if let record = message.records.first {
+                            let payload = record.payload
+                            print("Writing payload bytes: \(payload.map { String(format: "%02x", $0) }.joined())")
+                        }
                         tag.writeNDEF(message) { error in
                             if let error = error {
                                 session.invalidate(errorMessage: "Write failed: \(error.localizedDescription)")
                             } else {
                                 session.alertMessage = "Write successful!"
+                                print(message)
                                 session.invalidate()
                                 DispatchQueue.main.async {
                                     self.statusMessage = "Write completed!"
@@ -84,12 +89,22 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                         }
 
                         if let message = message {
-                            let text = message.records.compactMap {
-                                String(data: $0.payload.dropFirst(), encoding: .utf8)
+                            let text = message.records.compactMap { record -> String? in
+                                let payload = record.payload
+                                guard let statusByte = payload.first else { return nil }
+
+                                let isUTF16 = (statusByte & 0x80) != 0
+                                let langCodeLength = Int(statusByte & 0x3F)
+                                let textData = payload.dropFirst(1 + langCodeLength)
+
+                                let encoding: String.Encoding = isUTF16 ? .utf16 : .utf8
+                                let decoded = String(data: textData, encoding: encoding)
+                                return decoded
                             }.joined(separator: "\n")
 
                             DispatchQueue.main.async {
                                 self.scannedText = text
+                                print("Scanned text: \(self.scannedText)")
                                 self.statusMessage = "Read successful!"
                             }
                         }

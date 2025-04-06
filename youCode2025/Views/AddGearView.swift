@@ -13,14 +13,14 @@ struct AddGearView: View {
     var gear_id: Int?
     @State private var isPerformingTask = false
     
-    @State private var name: String
+    @State private var name: String = ""
     @State private var createdAt: Date?
-    @State private var type: GearItem.GearType
-    @State private var description: String
-    @State private var currentCondition: GearItem.GearCondition
-    @State private var latitude: Double
-    @State private var longitude: Double
-    @State private var isAvailable: Bool
+    @State private var type: GearItem.GearType = GearItem.GearType.backpack
+    @State private var description: String = ""
+    @State private var currentCondition: GearItem.GearCondition = GearItem.GearCondition.excellent
+    @State private var latitude: Double = 0.0
+    @State private var longitude: Double = 0.0
+    @State private var isAvailable = true
 
     var body: some View {
         VStack {
@@ -42,7 +42,7 @@ struct AddGearView: View {
                 action: {
                 isPerformingTask = true
                 Task {
-                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: true)
+                    let result = try await dbService.createGear(name: name, type: type, description: description, currentCondition: currentCondition, latitude: 0.0, longitude: 0.0, isAvailable: isAvailable)
                     guard let id = result.id else {
                         print("Error finding newly-added Gear ID")
                         return
