@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GearsView: View {
     @State private var showingMap = false
-    let gearItems: [GearItem] = []
+    var gearItems: [GearItem]
     
 //    let gearItems: [GearItem] = [GearItem(id: 123, gearType: GearType.boots, latitude: 49.28332506862739, longitude: -123.13560646901378, name: "Atom Hoodie", description: "jacket")] // TODO
     var body: some View {
@@ -36,5 +36,5 @@ struct GearsView: View {
 }
 
 #Preview {
-    GearsView()
+//    GearsView()
 }

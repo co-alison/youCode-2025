@@ -62,20 +62,25 @@ class DBService: ObservableObject {
         let session = try await client.auth.signIn(email: email, password: password)
         
         let user = session.user
-
+        
+        print(user.id.uuidString)
         // Fetch the user's profile from Supabase
         let data = try await client
             .from("Profiles")
             .select()
-            .eq(user.id.uuidString, value: "id")
+            .eq("id", value: user.id.uuidString)
             .single() // Expecting only one profile
             .execute()
             .data
+
+        
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let profile = try decoder.decode([Profile].self, from: data).first
-        
+        decoder.dateDecodingStrategy = .iso8601 // matches Supabase's timestamp format
 
+        let profile = try decoder.decode(Profile.self, from: data)
+        print(profile)
+        
         await MainActor.run {
             self.user = profile
         }
