@@ -13,6 +13,7 @@ struct ReturnView: View {
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
     @StateObject private var locationManager = LocationService()
+    @Binding var selectedTab: Int
     
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
@@ -169,6 +170,8 @@ struct ReturnView: View {
                                 selectedCondition = nil
                                 locationText = ""
                                 isPerformingTask = false
+                                dismiss()
+                                selectedTab = 3
                             } catch {
                                 print("Error updating gear: \(error)")
                             }
@@ -241,9 +244,9 @@ struct ConditionButton: View {
     }
 }
 
-#Preview {
-    NavigationView {
-        ReturnView()
-            .environmentObject(NFCService())
-    }
-}
+//#Preview {
+//    NavigationView {
+//        ReturnView()
+//            .environmentObject(NFCService())
+//    }
+//}

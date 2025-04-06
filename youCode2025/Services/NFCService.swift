@@ -14,9 +14,11 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
 
     @Published var scannedText: String = ""
     @Published var statusMessage: String = ""
+    @Published var complete: Bool = false
 
     func startReading() {
         isWriteMode = false
+        complete = false
         scannedText = ""
         nfcSession = NFCNDEFReaderSession(delegate: self, queue: .main, invalidateAfterFirstRead: true)
         nfcSession?.alertMessage = "Hold your iPhone near the NFC tag to read."
@@ -25,6 +27,7 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
 
     func startWriting(with tagId: String) {
         isWriteMode = true
+        complete = false
         let payload = NFCNDEFPayload.wellKnownTypeTextPayload(string: tagId, locale: Locale(identifier: "en"))!
         messageToWrite = NFCNDEFMessage(records: [payload])
         nfcSession = NFCNDEFReaderSession(delegate: self, queue: .main, invalidateAfterFirstRead: true)
@@ -73,6 +76,7 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                                 session.alertMessage = "Gear Added!!"
                                 print(message)
                                 session.invalidate()
+                                self.complete = true
                                 DispatchQueue.main.async {
                                     self.statusMessage = "Gear Added!"
                                 }
@@ -106,6 +110,7 @@ class NFCService: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate {
                                 self.scannedText = text
                                 print("Scanned text: \(self.scannedText)")
                                 session.alertMessage = "Tag scanned!"
+                                self.complete = true
                                 self.statusMessage = "Tag scanned!"
                             }
                         }

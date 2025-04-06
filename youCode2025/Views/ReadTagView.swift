@@ -11,13 +11,14 @@ import SwiftUI
 struct ReadTagView: View {
     @StateObject var nfcService = NFCService()
     @ObservedObject private var dbService = DBService.shared
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
 
                 // Borrow Gear Button
-                NavigationLink(destination: BorrowView().environmentObject(nfcService)) {
+                NavigationLink(destination: BorrowView(selectedTab: $selectedTab).environmentObject(nfcService)) {
                     Text("Borrow Gear")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -28,7 +29,7 @@ struct ReadTagView: View {
                 .padding(.horizontal)
                 
                 // Return Gear Button
-                NavigationLink(destination: ReturnView().environmentObject(nfcService)) {
+                NavigationLink(destination: ReturnView(selectedTab: $selectedTab).environmentObject(nfcService)) {
                     Text("Return Gear")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -39,7 +40,7 @@ struct ReadTagView: View {
                 .padding(.horizontal)
 
                 // Add Gear Tag Button
-                NavigationLink(destination: AddGearView()) {
+                NavigationLink(destination: AddGearView(selectedTab: $selectedTab)) {
                     Text("Add Gear Tag")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -57,5 +58,5 @@ struct ReadTagView: View {
 }
 
 #Preview {
-    ReadTagView()
+    ReadTagView(selectedTab: .constant(1))
 }

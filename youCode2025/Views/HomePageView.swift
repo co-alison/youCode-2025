@@ -68,7 +68,7 @@ struct HomePageView: View {
             }
             .tag(0)
 
-            ReadTagView()
+            ReadTagView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: "camera.fill")
                     Text("Scan")
