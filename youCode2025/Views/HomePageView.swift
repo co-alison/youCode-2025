@@ -33,7 +33,6 @@ struct HomePageView: View {
                         .cornerRadius(10)
                         .padding(.horizontal)
                 
-                        
                         if (searchText.isEmpty) {
                             CategoryView(gearItems: gearItems, gearTypes: gearTypes)
                         }
@@ -41,7 +40,7 @@ struct HomePageView: View {
                         Button(action: {
                             selectedTab = 2
                         }) {
-                            Text("Challenge of the month")
+                            Text("Borrow or exchange 5 times!")
                                 .fontWeight(.medium)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -121,7 +120,7 @@ struct CategoryView: View {
                 HStack(spacing: 16) {
                     ForEach(gearTypes, id: \.self) { gearType in
                         NavigationLink(destination: GearsView(gearItems: filterItemsByType(for: gearType), gearType: gearType)) {
-                            CategoryCard(title: gearType.rawValue.capitalized, imageName: gearType.rawValue)
+                            CategoryCard(title: gearType, imageName: gearType.lowercased())
                         }
                     }
                 }
@@ -134,20 +133,25 @@ struct CategoryView: View {
 struct CategoryCard: View {
     var title: String
     var imageName: String
-    
+
     var body: some View {
         ZStack(alignment: .bottomLeading) {
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 140, height: 180)
+                .clipped()
+                .cornerRadius(12)
+            
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.black.opacity(0.3))
                 .frame(width: 140, height: 180)
                 .cornerRadius(12)
-                .overlay(
-                    Text(title)
-                        .fontWeight(.semibold)
-                        .padding([.leading, .bottom], 8)
-                        .foregroundColor(.white),
-                    alignment: .bottomLeading
-                )
+
+            Text(title)
+                .fontWeight(.semibold)
+                .padding([.leading, .bottom], 8)
+                .foregroundColor(.white)
         }
     }
 }
