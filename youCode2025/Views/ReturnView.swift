@@ -10,6 +10,8 @@ import SwiftUI
 struct ReturnView: View {
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
+    @StateObject private var locationManager = LocationService()
+    
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
     @State private var locationText: String = ""
@@ -121,8 +123,8 @@ struct ReturnView: View {
                             try await dbService.updateGear(
                                 id: gearId,
                                 currentCondition: condition,
-                                latitude: mockLat,
-                                longitude: mockLong,
+                                latitude: locationManager.latitude,
+                                longitude: locationManager.longitude,
                                 isAvailable: true
                             )
                             
@@ -153,6 +155,10 @@ struct ReturnView: View {
             }
         }
         .padding(.bottom)
+        .onAppear {
+            locationManager.requestLocationPermission()
+            locationManager.startUpdatingLocation()
+        }
     }
 }
 

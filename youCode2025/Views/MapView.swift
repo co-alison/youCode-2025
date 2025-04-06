@@ -11,11 +11,9 @@ import MapKit
 struct MapView: View {
     let gearItems: [GearItem]
     
-    
-    @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 49.2827, longitude: -123.1207), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+    @State var region: MKCoordinateRegion
     
     @State private var selectedGearItem: GearItem? = nil
-//    @State private var showGearItemView: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -31,7 +29,6 @@ struct MapView: View {
                     }
                 }
             }
-//            .edgesIgnoringSafeArea(.all)
             .sheet(item: $selectedGearItem) { gear in
                 GearItemView(gearItem: gear)
             }
