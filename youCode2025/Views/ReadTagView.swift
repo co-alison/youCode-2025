@@ -10,55 +10,54 @@ import SwiftUI
 struct ReadTagView: View {
     @StateObject private var nfcService = NFCService()
     @ObservedObject private var dbService = DBService.shared
-    private var status: Status
+    
+//    private var status: Status
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Scan a Tag")
-                .font(.title)
-                .bold()
-            
-            
-            switch status {
-            case .borrowing:
-                Button("Confirm Transfer") {
-                    dbService.associateGearWithUser(userId: dbService.user?.id, gearId: <#T##Int#>)
+        NavigationView {
+            VStack(spacing: 30) {
+
+                NavigationLink(destination: BorrowView()) {
+                    Text("Borrow Gear")
                 }
-                Button("Cancel Transfer") {
-                    
-                }
-            case .returning:
+
+//                NavigationLink(destination: ReturnView()) {
+//                    Text("Return Gear")
+//                }
+//                
+//                NavigationLink(destination: AddGearView()) {
+//                    Text("Add Gear Tag")
+//                }
                 
-            case .adding:
                 
-                
+                               
+                               
             }
-                .onAppear(nfcService.startReading())
+            .navigationTitle("Scan a Tag")
+        }
+            
         
 
             
 
-            if !nfcService.scannedText.isEmpty {
-                VStack(alignment: .leading) {
-                    Text("Scanned Text:")
-                        .font(.headline)
-                    Text(nfcService.scannedText)
-                        .padding(.top, 4)
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
-            }
-
-            if !nfcService.statusMessage.isEmpty {
-                Text(nfcService.statusMessage)
-                    .foregroundColor(.gray)
-            }
-
-            Spacer()
-        }
-        .padding()
+//            if !nfcService.scannedText.isEmpty {
+//                VStack(alignment: .leading) {
+//                    Text("Scanned Text:")
+//                        .font(.headline)
+//                    Text(nfcService.scannedText)
+//                        .padding(.top, 4)
+//                }
+//                .padding()
+//                .background(Color.gray.opacity(0.1))
+//                .cornerRadius(12)
+//            }
+//
+//            if !nfcService.statusMessage.isEmpty {
+//                Text(nfcService.statusMessage)
+//                    .foregroundColor(.gray)
+//            }
     }
+    
 }
 
 extension ReadTagView {
@@ -71,5 +70,5 @@ extension ReadTagView {
 }
 
 #Preview {
-    ContentView()
+    ReadTagView()
 }

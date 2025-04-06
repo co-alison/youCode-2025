@@ -7,24 +7,58 @@
 import SwiftUI
 
 struct BorrowView: View {
+    @StateObject private var nfcService = NFCService()
     @ObservedObject private var dbService = DBService.shared
-    @Environment(\.dismiss) var dismiss
+//    @Environment(\.dismiss) var dismiss
     var gear_id: Int?
+    @State private var isPerformingTask = false
 
     var body: some View {
-        NavigationStack {
-            Button("Confirm Borrow") {
+        VStack {
+            if (nfcService.scannedText.isEmpty) {
+                Button("Scan Tag") {
+                    nfcService.startReading()
+                }
+            } else {
+                Button(
+                    action: {
+                    isPerformingTask = true
+                    Task {
+                        try await dbService.associateGearWithUser(userId: dbService.user!.id, gearId: Int(nfcService.scannedText)!)
+                        isPerformingTask = false
+                    }
+                    print(nfcService.scannedText)
+                    
+                },
+                    label: {
+                        
+
+                            if isPerformingTask {
+                                ProgressView()
+                            } else {
+                                Text("Confirm Borrow")
+                            }
+                    }
+                )
+                .disabled(isPerformingTask)
                 
-            }
-        }
-        .navigationTitle("Borrow Gear")
-        .toolbar(content: {
-            ToolbarItem(placement: .navigationBarLeading) {
-                XMarkButton().onTapGesture {
-                    dismiss()
+                Button("Cancel Borrow") {
+                    print("Cancelled")
                 }
             }
-        })
+        }
+//        .navigationTitle("Borrow Gear")
+//        .toolbar(content: {
+//            ToolbarItem(placement: .navigationBarLeading) {
+//                XMarkButton().onTapGesture {
+//                    dismiss()
+//                }
+//            }
+//        })
         
     }
+}
+
+#Preview {
+    BorrowView()
 }
