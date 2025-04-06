@@ -11,6 +11,7 @@ import MapKit
 struct MapView: View {
     let gearItems: [GearItem]
     
+    
     @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 49.2827, longitude: -123.1207), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
     
     @State private var selectedGearItem: GearItem? = nil

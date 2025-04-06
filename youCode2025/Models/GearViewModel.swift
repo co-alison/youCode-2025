@@ -2,8 +2,7 @@
 //  GearViewModel.swift
 //  youCode2025
 //
-//  Created by Anisa Pirani on 2025-04-05.
-//
+//  Created by Anisa Pirani on 2025-0F
 
 import SwiftUI
 import Combine
