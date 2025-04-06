@@ -17,6 +17,7 @@ struct GearItem: Codable, Identifiable {
     let currentCondition: String
     let latitude: Double
     let longitude: Double
+    let isAvailable: Bool
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -27,6 +28,7 @@ struct GearItem: Codable, Identifiable {
         case currentCondition = "current_condition"
         case latitude
         case longitude
+        case isAvailable = "is_available"
     }
     
     enum GearType: String, Codable {

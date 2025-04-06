@@ -133,7 +133,7 @@ class DBService: ObservableObject {
     
     // Creates a new gear item
     func createGear(name: String, type: String, description: String,
-                   currentCondition: String, latitude: Double, longitude: Double) async throws -> GearItem {
+                    currentCondition: String, latitude: Double, longitude: Double, isAvailable: Bool) async throws -> GearItem {
         return try await sendRequest(
             endpoint: "Gear",
             method: "POST",
@@ -143,7 +143,8 @@ class DBService: ObservableObject {
                 "description": description,
                 "current_condition": currentCondition,
                 "latitude": latitude,
-                "longitude": longitude
+                "longitude": longitude,
+                "is_available": isAvailable
             ]
         ).first!
     }
@@ -164,7 +165,7 @@ class DBService: ObservableObject {
         let userGears: [UserGearItem] = try await sendRequest(
             endpoint: "UserGears",
             method: "GET",
-            queryItems: [URLQueryItem(name: "userID", value: "eq.\(userId.uuidString)")]
+            queryItems: [URLQueryItem(name: "user_id", value: "eq.\(userId.uuidString)")]
         )
         
         // Load the gear details for each user gear
@@ -189,14 +190,10 @@ class DBService: ObservableObject {
     func disassociateGearFromUser(userId: UUID, gearId: Int) async throws -> UserGearItem {
         return try await sendRequest(
             endpoint: "UserGears",
-            method: "POST",
-            body: ["user_id": userId.uuidString, "gear_id": gearId, "is_active": true]
+            method: "UPDATE",
+            body: ["user_id": userId.uuidString, "gear_id": gearId, "is_active": false]
         ).first!
     }
-    
-    
-    
-    
     
     private func sendRequest<T: Decodable>(
         endpoint: String,
