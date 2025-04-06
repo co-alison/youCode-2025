@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ReturnView: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var nfcService: NFCService
     @ObservedObject private var dbService = DBService.shared
     @StateObject private var locationManager = LocationService()
@@ -15,26 +16,17 @@ struct ReturnView: View {
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
     @State private var locationText: String = ""
-    // For testing purposes
-    @State private var hasScanned = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                // Section: Scan Tag Button
                 Text("SCAN TAG TO RETURN ITEM")
                     .font(.headline)
                     .padding(.horizontal)
                 
-                // Force view to show both states for testing
-                if nfcService.scannedText.isEmpty && !hasScanned {
+                if nfcService.scannedText.isEmpty {
                     Button(action: {
                         nfcService.startReading()
-                        // For testing purposes - remove this in production
-                        // and rely solely on nfcService.scannedText
-                        hasScanned = true
-                        // Simulate scan for testing
-                        nfcService.scannedText = "12345"
                     }) {
                         Text("Scan Tag")
                             .frame(maxWidth: .infinity)
@@ -44,19 +36,13 @@ struct ReturnView: View {
                             .cornerRadius(8)
                     }
                     .padding(.horizontal)
-                }
-                
-                // Show these sections after scanning
-                if !nfcService.scannedText.isEmpty || hasScanned {
-                    // Section: Report Condition
+                } else {
                     Text("REPORT CONDITION")
                         .font(.headline)
                         .padding(.horizontal)
                         .padding(.top, 8)
                     
                     HStack(spacing: 8) {
-                        // Access the actual case values from your GearItem.GearCondition enum
-                        // Using the correct case names from your actual implementation
                         ForEach(GearItem.GearCondition.allCases, id: \.self) { condition in
                             Button(action: {
                                 selectedCondition = condition
@@ -76,7 +62,6 @@ struct ReturnView: View {
                     Divider()
                         .padding(.vertical)
                     
-                    // Section: Upload Image & Location
                     Text("UPLOAD IMAGE & LOCATION")
                         .font(.headline)
                         .padding(.horizontal)
@@ -100,7 +85,6 @@ struct ReturnView: View {
                         .cornerRadius(8)
                         
                         Button(action: {
-                            // Image upload logic
                         }) {
                             Image(systemName: "arrow.up.square.fill")
                                 .font(.title)
@@ -123,20 +107,15 @@ struct ReturnView: View {
                     
                     Spacer().frame(height: 24)
                     
-                    // Section: Complete Return Button
                     Button(action: {
                         isPerformingTask = true
                         Task {
-                            guard let gearId = Int(nfcService.scannedText.isEmpty ? "12345" : nfcService.scannedText),
+                            guard let gearId = Int(nfcService.scannedText),
                                   let condition = selectedCondition?.rawValue,
                                   let userId = dbService.user?.id else {
                                 isPerformingTask = false
                                 return
                             }
-                            
-                            // Replace with actual location-fetching if needed
-                            let mockLat = 51.0447
-                            let mockLong = -114.0719
                             
                             do {
                                 try await dbService.updateGearUser(userId: userId, gearId: gearId, isActive: false)
@@ -149,15 +128,13 @@ struct ReturnView: View {
                                 )
                                 let _ = try await dbService.updateProfile(id: dbService.user!.id, points: (dbService.user?.points! ?? 0) + 1)
                                 
-                                hasScanned = false
                                 nfcService.scannedText = ""
                                 selectedCondition = nil
                                 locationText = ""
+                                isPerformingTask = false
                             } catch {
                                 print("Error updating gear: \(error)")
                             }
-                            
-                            isPerformingTask = false
                         }
                     }) {
                         if isPerformingTask {
