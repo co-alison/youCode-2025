@@ -24,10 +24,6 @@ struct ReturnView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("SCAN TAG TO RETURN ITEM")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
                 if nfcService.scannedText.isEmpty {
                     Button(action: {
                         nfcService.startReading()
@@ -41,11 +37,12 @@ struct ReturnView: View {
                     }
                     .padding(.horizontal)
                 } else {
-                    SectionHeader(title: "REPORT CONDITION")
-                    LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
-                    ], spacing: 8) {
+                    Text("REPORT CONDITION")
+                        .font(.headline)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    
+                    HStack(spacing: 8) {
                         ForEach(GearItem.GearCondition.allCases, id: \.self) { condition in
                             Button(action: {
                                 selectedCondition = condition
@@ -68,25 +65,25 @@ struct ReturnView: View {
 //                    Text("UPLOAD IMAGE & LOCATION")
 //                        .font(.headline)
 //                        .padding(.horizontal)
-//                    
+//
 //                    Text("Share a picture of where you took this piece!")
 //                        .font(.subheadline)
 //                        .foregroundColor(.secondary)
 //                        .padding(.bottom, 5)
 //                        .padding(.horizontal)
-//                    
+//
 //                    HStack {
 //                        HStack {
 //                            Image(systemName: "mappin.circle.fill")
 //                                .foregroundColor(.gray)
-//                            
+//
 //                            TextField("Where was this photo taken?", text: $locationText)
 //                                .padding(.vertical, 8)
 //                        }
 //                        .padding(.horizontal)
 //                        .background(Color(UIColor.systemGray5))
 //                        .cornerRadius(8)
-//                        
+//
 //                        Button(action: {
 //                        }) {
 //                            Image(systemName: "arrow.up.square.fill")
@@ -125,16 +122,14 @@ struct ReturnView: View {
                             .contentShape(Rectangle())
                             .onChange(of: selectedImage) { newItem in
                                 Task {
-                                    if let item = newItem {
-                                        if let data = try? await item.loadTransferable(type: Data.self),
-                                           let image = UIImage(data: data) {
-                                            gearUIImage = image
-                                        }
+                                    if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                       let image = UIImage(data: data) {
+                                        gearUIImage = image
                                     }
                                 }
-                        }
+                            }
                     }
-    
+                    
                     VStack(alignment: .leading) {
                         Text("For damage affecting usage contact")
                             .font(.footnote)
@@ -174,6 +169,7 @@ struct ReturnView: View {
                                 selectedCondition = nil
                                 locationText = ""
                                 isPerformingTask = false
+                                dismiss()
                             } catch {
                                 print("Error updating gear: \(error)")
                             }
