@@ -16,6 +16,7 @@ struct ProfileView: View {
     @State private var activeGearItemsForUser: [GearItem] = []
     @State private var user: Profile? = nil
     @State private var isLoading = true
+    @State private var start = true
 
     var body: some View {
         ScrollView {
@@ -25,9 +26,9 @@ struct ProfileView: View {
                     Color.accent
                         .frame(height: 150)
 
-                    Button("setting") {}
-                        .foregroundColor(.white)
-                        .padding()
+//                    Button("setting") {}
+//                        .foregroundColor(.white)
+//                        .padding()
                 }
 
                 ZStack {
@@ -35,17 +36,17 @@ struct ProfileView: View {
                         .fill(Color.primaryText)
                         .frame(width: 120, height: 120)
 
-                    if let urlString = user?.profilePhotoURL,
+                    if let urlString = user == nil ? dbService.user?.profilePhotoURL : user?.profilePhotoURL,
                        let imageURL = URL(string: urlString) {
-                        AsyncImage(url: imageURL) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 120, height: 120)
-                                .clipShape(Circle())
-                        } placeholder: {
-                            ProgressView()
-                                .frame(width: 120, height: 120)
+                            AsyncImage(url: imageURL) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 120, height: 120)
+                                    .clipShape(Circle())
+                            } placeholder: {
+                                ProgressView()
+                                    .frame(width: 120, height: 120)
                         }
                     } else {
                         Image(systemName: "person.crop.circle.fill")
@@ -58,7 +59,7 @@ struct ProfileView: View {
                 .offset(y: -60)
                 .padding(.bottom, -60)
 
-                Text("\(user?.firstName ?? "User") \(user?.lastName.prefix(1) ?? "").")
+                Text("\(user == nil ? dbService.user!.firstName : user?.firstName ?? "User") \(user == nil ? dbService.user!.lastName.prefix(1) : user!.lastName.prefix(1) ?? "").")
                     .font(.title)
                     .bold()
                     .foregroundColor(.primaryText)
@@ -66,7 +67,7 @@ struct ProfileView: View {
                 HStack {
                     Text("Vancouver, BC")
                     Spacer()
-                    if let createdDate = user?.created_at {
+                    if let createdDate = (user == nil ? dbService.user?.created_at : user?.created_at) {
                         Text("Member since \(formattedYear(from: createdDate))")
                     } else {
                         Text("Member since 2023")
@@ -82,7 +83,7 @@ struct ProfileView: View {
                 } else {
                     // Stats section
                     HStack(spacing: 32) {
-                        StatBlock(title: "ArcPoints", value: "\(user?.points ?? 0)")
+                        StatBlock(title: "ArcPoints", value: "\(user == nil ? dbService.user!.points : user!.points)")
                         StatBlock(title: "Borrows", value: "\(allGearItemsForUser.count)")
                     }
                     .padding()
@@ -157,15 +158,22 @@ struct ProfileView: View {
             .onAppear {
                 Task {
                     do {
-                        if userNeedsRefresh {
-                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
-                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
-                            user = try await dbService.getUser(id: dbService.user!.id)
+                        if start {
+                            guard let userId = dbService.user?.id else { return }
+                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: userId)
+                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: userId)
+                            start = false
                             isLoading = false
+                        } else if userNeedsRefresh {
+                            guard let userId = dbService.user?.id else { return }
+                            allGearItemsForUser = try await dbService.getGearItemsForUser(userId: userId)
+                            activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: userId)
+                            user = try await dbService.getUser(id: userId)
                             userNeedsRefresh = false
+                            isLoading = false
                         }
                     } catch {
-                        print("Error fetching users: \(error)")
+                        print("Error in onAppear: \(error)")
                     }
                 }
             }

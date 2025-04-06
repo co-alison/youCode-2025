@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HomePageView: View {
-    @StateObject private var dbService = DBService.shared
+    @ObservedObject private var dbService = DBService.shared
     @State private var gearItems: [GearItem] = []
     @State private var selectedTab = 0
     @State private var searchText: String = ""

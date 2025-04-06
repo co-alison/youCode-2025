@@ -401,55 +401,108 @@ class DBService: ObservableObject {
 
     
     // Updates a gear item
-    func updateGear(
-        id: Int,
-        currentCondition: String? = nil,
-        latitude: Double? = nil,
-        longitude: Double? = nil,
-        isAvailable: Bool? = nil,
-        gearUIImage: UIImage? = nil
-    ) async throws -> GearItem {
+    func updateGear(id: Int,
+                    currentCondition: String? = nil,
+                    latitude: Double? = nil,
+                    longitude: Double? = nil,
+                    isAvailable: Bool? = nil,
+                    gearUIImage: UIImage? = nil) async throws -> GearItem {
         var imageURL: String? = nil
+
         if let gearUIImage = gearUIImage,
            let imageData = gearUIImage.jpegData(compressionQuality: 0.8) {
             imageURL = try await uploadGearImage(gearId: id, imageData: imageData)
-        } else {
-            let updatePayload = GearUpdate(
-                 currentCondition: currentCondition,
-                 latitude: latitude,
-                 longitude: longitude,
-                 isAvailable: isAvailable,
-                 gearPhotoURL: imageURL
-            )
-            
-            let data = try await client
-                .from("Gear")
-                .update(updatePayload)
-                .eq("id", value: id)
-                .select()
-                .single()
-                .execute()
-                .data
-
-            guard let jsonString = String(data: data, encoding: .utf8) else {
-                throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
-            }
-
-            print("Raw JSON response - updateGear: \(jsonString)")
-
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(getFormatter())
-
-            guard let jsonData = jsonString.data(using: .utf8) else {
-                throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
-            }
-            let res = try decoder.decode(GearItem.self, from: jsonData)
-            print(res)
-            return res
         }
-        
-        return try await getGear(id: id)
+
+        // ✅ Always update, with or without image
+        let updatePayload = GearUpdate(
+            currentCondition: currentCondition,
+            latitude: latitude,
+            longitude: longitude,
+            isAvailable: isAvailable,
+            gearPhotoURL: imageURL
+        )
+
+        let data = try await client
+            .from("Gear")
+            .update(updatePayload)
+            .eq("id", value: id)
+            .select()
+            .single()
+            .execute()
+            .data
+
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+        }
+
+        print("Raw JSON response - updateGear: \(jsonString)")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(getFormatter())
+
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+        }
+
+        let res = try decoder.decode(GearItem.self, from: jsonData)
+        print("new res ---------------- \(res)")
+        return res
     }
+
+//    func updateGear(
+//        id: Int,
+//        currentCondition: String? = nil,
+//        latitude: Double? = nil,
+//        longitude: Double? = nil,
+//        isAvailable: Bool? = nil,
+//        gearUIImage: UIImage? = nil
+//    ) async throws -> GearItem {
+//        var imageURL: String? = nil
+//        if let gearUIImage = gearUIImage,
+//           let imageData = gearUIImage.jpegData(compressionQuality: 0.8) {
+//            imageURL = try await uploadGearImage(gearId: id, imageData: imageData)
+//        } else {
+//            let updatePayload = GearUpdate(
+//                 currentCondition: currentCondition,
+//                 latitude: latitude,
+//                 longitude: longitude,
+//                 isAvailable: isAvailable,
+//                 gearPhotoURL: imageURL
+//            )
+//            
+//            let data = try await client
+//                .from("Gear")
+//                .update(updatePayload)
+//                .eq("id", value: id)
+//                .select()
+//                .single()
+//                .execute()
+//                .data
+//
+//            guard let jsonString = String(data: data, encoding: .utf8) else {
+//                throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+//            }
+//
+//            print("Raw JSON response - updateGear: \(jsonString)")
+//            
+//            do {
+//                let decoder = JSONDecoder()
+//                decoder.dateDecodingStrategy = .formatted(getFormatter())
+//
+//                guard let jsonData = jsonString.data(using: .utf8) else {
+//                    throw NSError(domain: "updateGear", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to re-encode JSON string"])
+//                }
+//                let res = try decoder.decode(GearItem.self, from: jsonData)
+//                print("new res ---------------- \(res)")
+//                return res
+//            } catch {
+//                print("Decoding error: \(error)")
+//            }
+//        }
+//        
+//        return try await getGear(id: id)
+//    }
     
     
     // Gets all gear for a specific user
@@ -805,7 +858,7 @@ class DBService: ObservableObject {
             throw NSError(domain: "updateProfile", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
         }
 
-        print("Raw JSON response - updateGear: \(jsonString)")
+        print("Raw JSON response - updateProfile: \(jsonString)")
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(getFormatter())
