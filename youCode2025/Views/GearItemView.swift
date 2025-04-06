@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GearItemView: View {
     let gearItem: GearItem
+    var onReserve: (() -> Void)? = nil
     @Environment(\.dismiss) var dismiss
     @ObservedObject private var dbService = DBService.shared
 
@@ -30,12 +31,7 @@ struct GearItemView: View {
                                 .frame(width: 240, height: 240)
                         }
                     } else {
-                        Image("ceriumjacket") // placeholder
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 240, height: 240)
-                            .clipped()
-                            .cornerRadius(10)
+                        EmptyImage(width: 240, height: 240)
                     }
                 }
 
@@ -71,13 +67,13 @@ struct GearItemView: View {
                     Text("Current Condition:")
                         .font(.subheadline)
                         .bold()
-                    Text(gearItem.currentCondition.rawValue)
+                    Text(gearItem.currentCondition.rawValue.capitalized)
                         .font(.subheadline)
                 }
 
                 // Reserve Button
                 Button(action: {
-                    print("Reserved!")
+                    onReserve?()
                 }) {
                     Text("RESERVE")
                         .bold()

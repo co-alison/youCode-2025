@@ -90,6 +90,15 @@ struct HomePageView: View {
                 .tag(3)
         }
         .accentColor(.blue)
+        .onAppear {
+             Task {
+                 do {
+                     gearItems = try await dbService.getAllGear()
+                 } catch {
+                     print("Error fetching gear items: \(error)")
+                 }
+             }
+         }
         .onChange(of: selectedTab) { newTab in
             if newTab == 0 {
                 Task {

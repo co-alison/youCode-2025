@@ -66,6 +66,17 @@ struct LeaderboardView: View {
                 }
             }
             .navigationTitle("Leaderboard")
+            .onAppear {
+                Task {
+                    do {
+                        users = try await dbService.getUsers()
+                        sortUsers()
+                        isLoading = false
+                    } catch {
+                        print("Error fetching users: \(error)")
+                    }
+                }
+            }
             .onChange(of: selectedTab) { newTab in
                 if newTab == 2 {
                     Task {

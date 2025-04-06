@@ -23,9 +23,9 @@ struct ProfileView: View {
                     Color.accent
                         .frame(height: 150)
 
-                    Button("setting") {}
-                        .foregroundColor(.white)
-                        .padding()
+//                    Button("setting") {}
+//                        .foregroundColor(.white)
+//                        .padding()
                 }
 
                 ZStack {
@@ -76,23 +76,22 @@ struct ProfileView: View {
                 // Stats section
                 HStack(spacing: 32) {
                     StatBlock(title: "ArcPoints", value: "\(dbService.user?.points ?? 0)")
-                    StatBlock(title: "Level", value: "GOLD")
-                    StatBlock(title: "Impact", value: "30km")
+                    StatBlock(title: "Borrows", value: "\(allGearItemsForUser.count)")
                 }
                 .padding()
                 .background(Color.cardBackground)
                 .cornerRadius(10)
 
-                HStack {
-                    StatLabel(title: "donations:")
-                    Spacer()
-                    StatLabel(title: "borrows: \(allGearItemsForUser.count)")
-                }
-                .padding(.horizontal)
+//                HStack {
+//                    StatLabel(title: "donations:")
+//                    Spacer()
+//                    StatLabel(title: "borrows: \(allGearItemsForUser.count)")
+//                }
+//                .padding(.horizontal)
 
                 // Current Pieces Section
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Current Pieces")
+                    Text("Current Items")
                         .font(.title2)
                         .bold()
                         .foregroundColor(.primaryText)
@@ -125,7 +124,7 @@ struct ProfileView: View {
                                                 .frame(width: 100, height: 100)
                                         }
                                     } else {
-                                        EmptyImage()
+                                        EmptyImage(width: 100, height: 100)
                                     }
                                 }
                                 
@@ -151,6 +150,17 @@ struct ProfileView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+            .onAppear {
+                Task {
+                    do {
+                        allGearItemsForUser = try await dbService.getGearItemsForUser(userId: dbService.user!.id)
+                        activeGearItemsForUser = try await dbService.getActiveGearItemsForUser(userId: dbService.user!.id)
+                        isLoading = false
+                    } catch {
+                        print("Error fetching users: \(error)")
+                    }
+                }
+            }
             .onChange(of: selectedTab) { newTab in
                 if newTab == 3 {
                     Task {

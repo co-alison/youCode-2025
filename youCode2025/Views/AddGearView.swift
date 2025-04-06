@@ -75,7 +75,7 @@ struct AddGearView: View {
                     TextField("Item Name", text: $name)
                         .textFieldStyle(.roundedBorder)
 
-                    TextField("Color Name", text: $description)
+                    TextField("Description", text: $description)
                         .textFieldStyle(.roundedBorder)
 
                     Picker("Category", selection: $type) {

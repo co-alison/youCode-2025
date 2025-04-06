@@ -11,6 +11,7 @@ struct ListView: View {
     let gearItems: [GearItem]
     
     @State private var selectedGearItem: GearItem? = nil
+    @State private var reservedGearItem: GearItem? = nil
     
     var body: some View {
         ScrollView {
@@ -35,7 +36,7 @@ struct ListView: View {
                                             .frame(width: 100, height: 100)
                                     }
                                 } else {
-                                    EmptyImage()
+                                    EmptyImage(width: 100, height: 100)
                                 }
                             }
                             Text(gearItem.name)
@@ -49,7 +50,15 @@ struct ListView: View {
             }
         }
         .sheet(item: $selectedGearItem) { gear in
-            GearItemView(gearItem: gear)
+            GearItemView(gearItem: gear,
+                 onReserve: {
+                    reservedGearItem = gear
+                    selectedGearItem = nil
+                }
+            )
+        }
+        .sheet(item: $reservedGearItem) { gear in
+            ContactInfoView(gearItem: gear)
         }
     }
 }

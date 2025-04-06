@@ -218,6 +218,7 @@ class DBService: ObservableObject {
         let data = try await client
             .from("Gear")
             .select()
+            .eq("is_available", value: true)
             .execute()
             .data
         

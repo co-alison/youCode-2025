@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ReturnView: View {
     @Environment(\.dismiss) private var dismiss
@@ -16,6 +17,9 @@ struct ReturnView: View {
     @State private var isPerformingTask = false
     @State private var selectedCondition: GearItem.GearCondition?
     @State private var locationText: String = ""
+    
+    @State private var gearUIImage: UIImage?
+    @State private var selectedImage: PhotosPickerItem?
     
     var body: some View {
         ScrollView {
@@ -61,38 +65,76 @@ struct ReturnView: View {
                     Divider()
                         .padding(.vertical)
                     
-                    Text("UPLOAD IMAGE & LOCATION")
-                        .font(.headline)
-                        .padding(.horizontal)
+//                    Text("UPLOAD IMAGE & LOCATION")
+//                        .font(.headline)
+//                        .padding(.horizontal)
+//                    
+//                    Text("Share a picture of where you took this piece!")
+//                        .font(.subheadline)
+//                        .foregroundColor(.secondary)
+//                        .padding(.bottom, 5)
+//                        .padding(.horizontal)
+//                    
+//                    HStack {
+//                        HStack {
+//                            Image(systemName: "mappin.circle.fill")
+//                                .foregroundColor(.gray)
+//                            
+//                            TextField("Where was this photo taken?", text: $locationText)
+//                                .padding(.vertical, 8)
+//                        }
+//                        .padding(.horizontal)
+//                        .background(Color(UIColor.systemGray5))
+//                        .cornerRadius(8)
+//                        
+//                        Button(action: {
+//                        }) {
+//                            Image(systemName: "arrow.up.square.fill")
+//                                .font(.title)
+//                                .foregroundColor(Color.yellow)
+//                        }
+//                        .padding(.horizontal, 8)
+//                    }
+//                    .padding(.horizontal)
                     
-                    Text("Share a picture of where you took this piece!")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .padding(.bottom, 5)
-                        .padding(.horizontal)
-                    
-                    HStack {
-                        HStack {
-                            Image(systemName: "mappin.circle.fill")
-                                .foregroundColor(.gray)
-                            
-                            TextField("Where was this photo taken?", text: $locationText)
-                                .padding(.vertical, 8)
+                    SectionHeader(title: "UPLOAD ITEM PHOTO")
+                    VStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
+                            .foregroundColor(.gray)
+                            .frame(height: 180)
+                            .overlay(
+                                Group {
+                                    if let gearUIImage = gearUIImage {
+                                        Image(uiImage: gearUIImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(maxWidth: .infinity)
+                                    } else {
+                                        Image(systemName: "arrow.up.to.line.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 40, height: 40)
+                                            .foregroundColor(.gray)
+                                    }
+                                }
+                            )
+
+                        PhotosPicker("Choose a photo", selection: $selectedImage, matching: .images)
+                            .frame(width: 180, height: 180)
+                            .contentShape(Rectangle())
+                            .onChange(of: selectedImage) { newItem in
+                                Task {
+                                    if let item = newItem {
+                                        if let data = try? await item.loadTransferable(type: Data.self),
+                                           let image = UIImage(data: data) {
+                                            gearUIImage = image
+                                        }
+                                    }
+                                }
                         }
-                        .padding(.horizontal)
-                        .background(Color(UIColor.systemGray5))
-                        .cornerRadius(8)
-                        
-                        Button(action: {
-                        }) {
-                            Image(systemName: "arrow.up.square.fill")
-                                .font(.title)
-                                .foregroundColor(Color.yellow)
-                        }
-                        .padding(.horizontal, 8)
                     }
-                    .padding(.horizontal)
-                    
+    
                     VStack(alignment: .leading) {
                         Text("For damage affecting usage contact")
                             .font(.footnote)
@@ -123,7 +165,8 @@ struct ReturnView: View {
                                     currentCondition: condition,
                                     latitude: locationManager.latitude,
                                     longitude: locationManager.longitude,
-                                    isAvailable: true
+                                    isAvailable: true,
+                                    gearUIImage: gearUIImage
                                 )
                                 let _ = try await dbService.updateProfile(id: dbService.user!.id, points: (dbService.user?.points! ?? 0) + 1)
                                 

@@ -7,7 +7,10 @@
 import SwiftUI
 
 struct ContactInfoView: View {
+    let gearItem: GearItem
     @ObservedObject private var dbService = DBService.shared
+    @State private var user: Profile? = nil
+    @State private var isLoading: Bool = true
     
     var body: some View {
         ScrollView {
@@ -26,16 +29,43 @@ struct ContactInfoView: View {
                         )
 
                     // Profile Picture
-                    Circle()
-                        .fill(Color.primaryText)
-                        .frame(width: 100, height: 100)
-                        .overlay(
-                            Image(systemName: "person.fill")
+//                    Circle()
+//                        .fill(Color.primaryText)
+//                        .frame(width: 100, height: 100)
+//                        .overlay(
+//                            Image(systemName: "person.fill")
+//                                .foregroundColor(.white)
+//                                .font(.system(size: 40))
+//                        )
+//                        .offset(y: -50)
+//                        .padding(.bottom, -50)
+                    ZStack {
+                        Circle()
+                            .fill(Color.primaryText)
+                            .frame(width: 100, height: 100)
+
+                        if let urlString = dbService.user?.profilePhotoURL,
+                           let imageURL = URL(string: urlString) {
+                            AsyncImage(url: imageURL) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 90, height: 90)
+                                    .clipShape(Circle())
+                            } placeholder: {
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                            }
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
                                 .foregroundColor(.white)
-                                .font(.system(size: 40))
-                        )
-                        .offset(y: -50)
-                        .padding(.bottom, -50)
+                        }
+                    }
+                    .offset(y: -50)
+                    .padding(.bottom, -50)
 
                     Text("\(user.firstName) \(user.lastName)")
                         .font(.title2)
@@ -97,5 +127,5 @@ struct InfoRow: View {
 }
 
 #Preview {
-    ContactInfoView()
+//    ContactInfoView()
 }

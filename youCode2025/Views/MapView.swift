@@ -14,6 +14,7 @@ struct MapView: View {
     @State var region: MKCoordinateRegion
     
     @State private var selectedGearItem: GearItem? = nil
+    @State private var reservedGearItem: GearItem? = nil
     
     var body: some View {
         NavigationStack {
@@ -30,7 +31,15 @@ struct MapView: View {
                 }
             }
             .sheet(item: $selectedGearItem) { gear in
-                GearItemView(gearItem: gear)
+                GearItemView(gearItem: gear,
+                     onReserve: {
+                        reservedGearItem = gear
+                        selectedGearItem = nil
+                    }
+                )
+            }
+            .sheet(item: $reservedGearItem) { gear in
+                ContactInfoView(gearItem: gear)
             }
         }
     }
