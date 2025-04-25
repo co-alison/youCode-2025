@@ -14,6 +14,7 @@ struct ContentView: View {
             HomePageView()
         } else {
             WelcomeView()
+                .accentColor(.black)
         }
     }
 }

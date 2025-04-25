@@ -16,31 +16,24 @@ struct SignUpView: View {
     @State private var selectedImage: PhotosPickerItem?
     @State private var profileUIImage: UIImage?
     @ObservedObject private var dbService = DBService.shared
-    @Environment(\.presentationMode) var presentationMode
-    @State private var navigateToLogin = false
     
     var body: some View {
         ZStack {
-            // Background image
             Image("arc")
                 .resizable()
                 .scaledToFill()
                 .edgesIgnoringSafeArea(.all)
             
-            // Content with spacing to move login elements down
             ScrollView {
                 VStack {
-                    // Standardized spacing
                     Spacer().frame(height: 80)
                     
-                    // Arc logo image - centered
                     Image("arcboth")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 200, height: 200)
                         .frame(maxWidth: .infinity, alignment: .center)
                     
-                    // Input fields
                     TextField("Email", text: $email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .autocapitalization(.none)
@@ -92,7 +85,7 @@ struct SignUpView: View {
                         }
                     }
                     
-                    Button(action: {
+                    UnderlineButton(text: "Login", width: .infinity) {
                         Task {
                             do {
                                 try await dbService.signUp(
@@ -106,10 +99,7 @@ struct SignUpView: View {
                                 print("Authentication error: \(error.localizedDescription)")
                             }
                         }
-                    }) {
-                        Text("Sign Up")
-                            .underline()
-                    }
+                    } 
                     .buttonStyle(.borderedProminent)
                     .tint(.black)
                     .padding()
@@ -119,14 +109,10 @@ struct SignUpView: View {
                         Text("Already have an account?")
                             .foregroundColor(.black)
                         
-                        NavigationLink(destination: LoginView(), isActive: $navigateToLogin) {
-                            Button(action: {
-                                navigateToLogin = true
-                            }) {
-                                Text("Login")
-                                    .underline()
-                                    .foregroundColor(.black)
-                            }
+                        NavigationLink(destination: LoginView()) {
+                            Text("Login")
+                                .underline()
+                                .foregroundColor(.black)
                         }
                     }
                     .padding()
@@ -135,8 +121,8 @@ struct SignUpView: View {
                 .padding()
             }
         }
-        .accentColor(.black)
-        .navigationBarBackButtonHidden(false)
+        .navigationTitle("Sign Up")
+        .navigationBarBackButtonHidden(true)
     }
 }
 

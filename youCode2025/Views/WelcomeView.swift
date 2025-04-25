@@ -8,13 +8,9 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @State private var navigateToSignIn = false
-    @State private var navigateToSignUp = false
-
     var body: some View {
-        NavigationView {
+        NavigationView { // TODO: this can just be an if/else with 2 views
             ZStack {
-                // Background image
                 Image("arc")
                     .resizable()
                     .scaledToFill()
@@ -23,7 +19,6 @@ struct WelcomeView: View {
                 VStack {
                     Spacer().frame(height: 100)
 
-                    // Logo image - centered
                     Image("arcboth")
                         .resizable()
                         .scaledToFit()
@@ -33,26 +28,12 @@ struct WelcomeView: View {
                     Spacer().frame(height: 40)
 
                     VStack(spacing: 20) {
-                        NavigationLink(destination: LoginView(), isActive: $navigateToSignIn) {
-                            Text("Login")
-                                .underline()
-                                .foregroundColor(.white)
-                                .font(.title2)
-                                .padding()
-                                .frame(width: 200)
-                                .background(Color.black)
-                                .cornerRadius(10)
+                        NavigationLink(destination: LoginView()) {
+                            NavigationText(text: "Login")
                         }
 
-                        NavigationLink(destination: SignUpView(), isActive: $navigateToSignUp) {
-                            Text("Sign Up")
-                                .underline()
-                                .foregroundColor(.white)
-                                .font(.title2)
-                                .padding()
-                                .frame(width: 200)
-                                .background(Color.black)
-                                .cornerRadius(10)
+                        NavigationLink(destination: SignUpView()) {
+                            NavigationText(text: "Sign Up")
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -64,6 +45,10 @@ struct WelcomeView: View {
             .accentColor(.black)
         }
     }
+}
+
+extension WelcomeView {
+    
 }
 
 #Preview {

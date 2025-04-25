@@ -11,23 +11,16 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @ObservedObject private var dbService = DBService.shared
-    @Environment(\.presentationMode) var presentationMode
-    @State private var navigateToSignUp = false
     
     var body: some View {
         NavigationView {
             ZStack {
-                // Background image
                 Image("arc")
                     .resizable()
                     .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
-                    // Standardized spacing
-                   // Spacer().frame(height: 0)
-                    
-                    // Arc logo image - centered
                     Image("arcboth")
                         .resizable()
                         .scaledToFit()
@@ -35,7 +28,6 @@ struct LoginView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, -100)
                 
-                    // Input fields
                     TextField("Email", text: $email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .autocapitalization(.none)
@@ -50,8 +42,7 @@ struct LoginView: View {
                         .padding(.bottom, 8)
                         .accentColor(.black)
                     
-                    // Login button
-                    Button(action: {
+                    UnderlineButton(text: "Login", width: .infinity) {
                         Task {
                             do {
                                 try await dbService.signIn(email: email, password: password)
@@ -59,31 +50,16 @@ struct LoginView: View {
                                 print("Authentication error: \(error.localizedDescription)")
                             }
                         }
-                    }) {
-                        Text("Login")
-                            .underline()
-                            .foregroundColor(.white)
-                            .font(.title2)
-                            .padding()
-                            .frame(width: 95, height: 35)
-                            .background(Color.black)
-                            .cornerRadius(10)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
                     
-                    // Sign-up link
                     HStack {
                         Text("Don't have an account?")
                             .foregroundColor(.black)
                         
-                        NavigationLink(destination: SignUpView(), isActive: $navigateToSignUp) {
-                            Button(action: {
-                                navigateToSignUp = true
-                            }) {
-                                Text("Sign Up")
-                                    .underline()
-                                    .foregroundColor(.black)
-                            }
+                        NavigationLink(destination: SignUpView()) {
+                            Text("Sign Up")
+                                .underline()
+                                .foregroundColor(.black)
                         }
                     }
                     .padding()
@@ -91,8 +67,9 @@ struct LoginView: View {
                 }
                 .padding()
             }
-            .accentColor(.black)
         }
+        .navigationTitle("Login")
+        .navigationBarBackButtonHidden(true)
     }
 }
 
